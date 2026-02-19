@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Backend files
+    "server.cjs",
+    "server.js",
+    "init-db.cjs",
+    "init-db.js",
   ]),
 ]);
 
