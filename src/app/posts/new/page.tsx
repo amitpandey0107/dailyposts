@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
@@ -31,6 +32,7 @@ export default function NewPost() {
   const [success, setSuccess] = useState('');
   const [imagePreview, setImagePreview] = useState<string>('');
   const [uploadedFileName, setUploadedFileName] = useState<string>('');
+  const [imageSource, setImageSource] = useState<'upload' | 'url'>('upload');
   const [formData, setFormData] = useState<FormData>({
     title: '',
     excerpt: '',
@@ -109,7 +111,7 @@ export default function NewPost() {
 
       const data = await response.json();
       return data.imageUrl;
-    } catch (err) {
+    } catch {
       throw new Error('Image upload failed');
     }
   };
@@ -174,41 +176,49 @@ export default function NewPost() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-blue-900/20 to-gray-900 flex flex-col">
       <Navigation />
 
       {/* Main Content */}
-      <main className="grow max-w-4xl mx-auto px-4 w-full py-12">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Create New Post</h1>
-          <p className="text-gray-600">Share your thoughts and insights with the world</p>
+      <main className="grow max-w-5xl mx-auto px-4 w-full py-12">
+        {/* Header Section */}
+        <div className="mb-12 text-center">
+          <div className="inline-block mb-6 p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl border border-blue-500/30">
+            <span className="text-4xl">✨</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Create Your Story
+          </h1>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Share your insights and ideas with readers around the world. Make an impact today.
+          </p>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-8 flex gap-3">
+          <div className="bg-red-500/10 border-2 border-red-500/30 rounded-xl p-4 mb-8 flex gap-3 backdrop-blur-sm">
             <span className="text-2xl">⚠️</span>
             <div>
-              <h3 className="font-semibold text-red-900">Error</h3>
-              <p className="text-red-800 text-sm">{error}</p>
+              <h3 className="font-semibold text-red-400">Error</h3>
+              <p className="text-red-300 text-sm">{error}</p>
             </div>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-8 flex gap-3">
+          <div className="bg-green-500/10 border-2 border-green-500/30 rounded-xl p-4 mb-8 flex gap-3 backdrop-blur-sm">
             <span className="text-2xl">✅</span>
             <div>
-              <h3 className="font-semibold text-green-900">Success</h3>
-              <p className="text-green-800 text-sm">{success}</p>
+              <h3 className="font-semibold text-green-400">Success</h3>
+              <p className="text-green-300 text-sm">{success}</p>
             </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <form onSubmit={handleSubmit} className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-3xl rounded-3xl shadow-2xl p-8 md:p-12 border border-white/10 space-y-8">
           {/* Title */}
-          <div className="mb-8">
-            <label htmlFor="title" className="block text-sm font-semibold text-gray-900 mb-3">
-              Post Title <span className="text-red-600">*</span>
+          <div>
+            <label htmlFor="title" className="block text-sm font-semibold text-gray-200 mb-3">
+              Post Title <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
@@ -216,54 +226,73 @@ export default function NewPost() {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="Enter an engaging title for your post"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              placeholder="What's on your mind? Make it compelling..."
+              className="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition backdrop-blur-sm text-lg"
               required
             />
           </div>
 
-          {/* Category */}
-          <div className="mb-8">
-            <label htmlFor="category" className="block text-sm font-semibold text-gray-900 mb-3">
-              Category <span className="text-red-600">*</span>
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-              required
-            >
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+          {/* Author and Category Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Author */}
+            <div>
+              <label htmlFor="author" className="block text-sm font-semibold text-gray-200 mb-3">
+                Author <span className="text-gray-400 text-xs">(default: Satish Mehta)</span>
+              </label>
+              <input
+                type="text"
+                id="author"
+                name="author"
+                value={formData.author}
+                onChange={handleChange}
+                placeholder="Enter author name"
+                className="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition backdrop-blur-sm"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label htmlFor="category" className="block text-sm font-semibold text-gray-200 mb-3">
+                Category <span className="text-red-400">*</span>
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition backdrop-blur-sm cursor-pointer"
+                required
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat} className="bg-gray-800">
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Excerpt */}
-          <div className="mb-8">
-            <label htmlFor="excerpt" className="block text-sm font-semibold text-gray-900 mb-3">
-              Excerpt <span className="text-red-600">*</span>
+          <div>
+            <label htmlFor="excerpt" className="block text-sm font-semibold text-gray-200 mb-3">
+              Excerpt <span className="text-red-400">*</span>
             </label>
             <textarea
               id="excerpt"
               name="excerpt"
               value={formData.excerpt}
               onChange={handleChange}
-              placeholder="Write a compelling summary of your post"
+              placeholder="Write a compelling summary (50-150 characters)"
               rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition"
+              className="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition backdrop-blur-sm"
               required
             />
           </div>
 
           {/* Content */}
-          <div className="mb-8">
-            <label htmlFor="content" className="block text-sm font-semibold text-gray-900 mb-3">
-              Content <span className="text-red-600">*</span>
+          <div>
+            <label htmlFor="content" className="block text-sm font-semibold text-gray-200 mb-3">
+              Content <span className="text-red-400">*</span>
             </label>
             <textarea
               id="content"
@@ -271,41 +300,27 @@ export default function NewPost() {
               value={formData.content}
               onChange={handleChange}
               placeholder="Write the full content of your post..."
-              rows={10}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition"
+              rows={12}
+              className="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition backdrop-blur-sm"
               required
             />
           </div>
 
-          {/* Author */}
-          <div className="mb-8">
-            <label htmlFor="author" className="block text-sm font-semibold text-gray-900 mb-3">
-              Author
-            </label>
-            <input
-              type="text"
-              id="author"
-              name="author"
-              value={formData.author}
-              onChange={handleChange}
-              placeholder="Author name"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            />
-            <p className="text-sm text-gray-500 mt-2">Default: Satish Mehta</p>
-          </div>
-
           {/* Image Upload Section */}
-          <div className="mb-8 p-6 bg-linear-to-br from-blue-50 to-purple-50 rounded-xl border-2 border-dashed border-blue-300">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Featured Image</h3>
+          <div className="p-8 bg-gradient-to-br from-blue-600/10 to-purple-600/10 rounded-2xl border-2 border-dashed border-blue-400/40 backdrop-blur-sm hover:border-blue-400/60 transition">
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+              <span className="text-2xl">🖼️</span> Featured Image <span className="text-red-400">*</span>
+            </h3>
             
             <div className="space-y-6">
               {/* Image Preview */}
               {imagePreview && (
-                <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
-                  <img
+                <div className="relative w-full h-64 bg-gray-800 rounded-xl overflow-hidden border border-white/10 shadow-lg group">
+                  <Image
                     src={imagePreview}
                     alt="Preview"
                     className="w-full h-full object-cover"
+                    fill
                   />
                   <button
                     type="button"
@@ -313,8 +328,9 @@ export default function NewPost() {
                       setImagePreview('');
                       setUploadedFileName('');
                       setFormData((prev) => ({ ...prev, thumbnailFile: undefined }));
+                      setError('');
                     }}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition"
+                    className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center transition shadow-lg opacity-0 group-hover:opacity-100"
                   >
                     ✕
                   </button>
@@ -323,63 +339,95 @@ export default function NewPost() {
 
               {/* Upload or URL Toggle */}
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Upload Image <span className="text-gray-500 text-xs">(max 10MB)</span>
-                  </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition cursor-pointer relative">
-                    <input
-                      type="file"
-                      onChange={handleImageFileChange}
-                      accept="image/*"
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    <div className="pointer-events-none">
-                      <p className="text-2xl mb-2">📤</p>
-                      <p className="text-sm font-medium text-gray-700">
-                        {uploadedFileName || 'Click to upload or drag and drop'}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF, WebP</p>
+                {/* Image Source Toggle */}
+                <div className="flex gap-3 bg-white/5 p-1 rounded-lg border border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setImageSource('upload')}
+                    className={`flex-1 py-3 px-4 rounded-md transition font-semibold text-sm ${
+                      imageSource === 'upload'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                        : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                    }`}
+                  >
+                    📤 Upload
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageSource('url')}
+                    className={`flex-1 py-3 px-4 rounded-md transition font-semibold text-sm ${
+                      imageSource === 'url'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                        : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                    }`}
+                  >
+                    🔗 URL
+                  </button>
+                </div>
+
+                {imageSource === 'upload' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Upload Image <span className="text-gray-500 text-xs">(max 10MB)</span>
+                    </label>
+                    <div className="border-2 border-dashed border-blue-500/50 rounded-xl p-8 text-center hover:border-blue-400 hover:bg-blue-500/5 transition cursor-pointer relative bg-white/5">
+                      <input
+                        type="file"
+                        onChange={handleImageFileChange}
+                        accept="image/*"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="pointer-events-none">
+                        <p className="text-5xl mb-3">📸</p>
+                        <p className="text-sm font-medium text-gray-300">
+                          {uploadedFileName || 'Click to upload or drag & drop'}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">PNG, JPG, GIF, WebP up to 10MB</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 border-t border-gray-300"></div>
-                  <span className="text-sm text-gray-500">OR</span>
-                  <div className="flex-1 border-t border-gray-300"></div>
-                </div>
-
-                <div>
-                  <label htmlFor="thumbnail" className="block text-sm font-medium text-gray-700 mb-3">
-                    Image URL
-                  </label>
-                  <input
-                    type="url"
-                    id="thumbnail"
-                    placeholder="https://example.com/image.jpg"
-                    value={formData.thumbnail}
-                    onChange={(e) => handleImageUrlChange(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  />
-                </div>
+                ) : (
+                  <div>
+                    <label htmlFor="thumbnail" className="block text-sm font-medium text-gray-300 mb-3">
+                      Image URL
+                    </label>
+                    <input
+                      type="url"
+                      id="thumbnail"
+                      placeholder="https://example.com/image.jpg"
+                      value={formData.thumbnail}
+                      onChange={(e) => {
+                        handleImageUrlChange(e.target.value);
+                      }}
+                      className="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition backdrop-blur-sm"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 pt-8 border-t border-white/10">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 font-semibold transition-all shadow-lg hover:shadow-xl"
+              className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 disabled:from-gray-600 disabled:via-gray-600 disabled:to-gray-600 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl disabled:shadow-none transform hover:scale-105 disabled:scale-100 flex items-center justify-center gap-3 text-lg"
             >
-              {loading ? '🔄 Publishing...' : '✨ Publish Post'}
+              {loading ? (
+                <>
+                  <span className="animate-spin">⏳</span> Publishing...
+                </>
+              ) : (
+                <>
+                  <span>🚀</span> Publish Post
+                </>
+              )}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 bg-gray-200 text-gray-900 px-6 py-3 rounded-lg hover:bg-gray-300 font-semibold transition-all"
+              className="flex-1 bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold transition border border-white/20"
             >
               Cancel
             </button>

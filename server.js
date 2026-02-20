@@ -1,6 +1,8 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -39,7 +41,7 @@ app.get('/api/posts', async (req, res) => {
     res.json(posts);
   } catch (error) {
     console.error('Error fetching posts:', error);
-    res.status(500).json({ error: 'Failed to fetch posts' });
+    res.status(500).json({ error: 'Failed to fetch posts. Make sure to run "npm run init-db" first.' });
   }
 });
 
@@ -81,46 +83,76 @@ app.post('/api/posts', async (req, res) => {
       .replace(/[^\w\s-]/g, '')
       .replace(/\s+/g, '-');
     
-    const connection = await pool.getConnection();
-    
-    // Check if slug already exists
-    const [existing] = await connection.query(
-      'SELECT id FROM posts WHERE slug = ?',
-      [slug]
-    );
-    
-    if (existing.length > 0) {
+    if (useMySQL && pool) {
+      const connection = await pool.getConnection();
+      
+      // Check if slug already exists
+      const [existing] = await connection.query(
+        'SELECT id FROM posts WHERE slug = ?',
+        [slug]
+      );
+      
+      if (existing.length > 0) {
+        connection.release();
+        return res.status(400).json({ error: 'A post with this title already exists' });
+      }
+      
+      // Insert new post
+      const [result] = await connection.query(
+        `INSERT INTO posts (title, slug, excerpt, content, author, category, thumbnail)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          title,
+          slug,
+          excerpt,
+          content,
+          author || 'Daily Post',
+          category,
+          thumbnail || '/images/placeholder-default.jpg',
+        ]
+      );
+      
       connection.release();
-      return res.status(400).json({ error: 'A post with this title already exists' });
-    }
-    
-    // Insert new post
-    const [result] = await connection.query(
-      `INSERT INTO posts (title, slug, excerpt, content, author, category, thumbnail)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
+      
+      res.status(201).json({
+        id: result.insertId,
         title,
         slug,
         excerpt,
         content,
-        author || 'Daily Post',
+        author: author || 'Daily Post',
         category,
-        thumbnail || '/images/placeholder-default.jpg',
-      ]
-    );
-    
-    connection.release();
-    
-    res.status(201).json({
-      id: result.insertId,
-      title,
-      slug,
-      excerpt,
-      content,
-      author: author || 'Daily Post',
-      category,
-      thumbnail: thumbnail || '/images/placeholder-default.jpg',
-    });
+        thumbnail: thumbnail || '/images/placeholder-default.jpg',
+      });
+    } else {
+      // Use JSON file - check if slug exists
+      if (postsData.some(p => p.slug === slug)) {
+        return res.status(400).json({ error: 'A post with this title already exists' });
+      }
+      
+      const newPost = {
+        id: Math.max(0, ...postsData.map(p => p.id || 0)) + 1,
+        title,
+        slug,
+        excerpt,
+        content,
+        author: author || 'Daily Post',
+        category,
+        thumbnail: thumbnail || '/images/placeholder-default.jpg',
+        date: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString().split('T')[0],
+      };
+      
+      postsData.push(newPost);
+      // Save to JSON file
+      try {
+        fs.writeFileSync(postsJsonPath, JSON.stringify({ posts: postsData }, null, 2));
+      } catch (e) {
+        console.warn('Could not save to posts.json:', e.message);
+      }
+      
+      res.status(201).json(newPost);
+    }
   } catch (error) {
     console.error('Error creating post:', error);
     res.status(500).json({ error: 'Failed to create post' });
@@ -133,22 +165,49 @@ app.put('/api/posts/:id', async (req, res) => {
     const { id } = req.params;
     const { title, excerpt, content, author, category, thumbnail } = req.body;
     
-    const connection = await pool.getConnection();
-    
-    const [result] = await connection.query(
-      `UPDATE posts 
-       SET title = ?, excerpt = ?, content = ?, author = ?, category = ?, thumbnail = ? 
-       WHERE id = ?`,
-      [title, excerpt, content, author, category, thumbnail, id]
-    );
-    
-    connection.release();
-    
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Post not found' });
+    if (useMySQL && pool) {
+      const connection = await pool.getConnection();
+      
+      const [result] = await connection.query(
+        `UPDATE posts 
+         SET title = ?, excerpt = ?, content = ?, author = ?, category = ?, thumbnail = ? 
+         WHERE id = ?`,
+        [title, excerpt, content, author, category, thumbnail, id]
+      );
+      
+      connection.release();
+      
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+      
+      res.json({ success: true, message: 'Post updated successfully' });
+    } else {
+      // Update in JSON data
+      const postIndex = postsData.findIndex(p => p.id === parseInt(id));
+      if (postIndex === -1) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+      
+      postsData[postIndex] = {
+        ...postsData[postIndex],
+        title: title || postsData[postIndex].title,
+        excerpt: excerpt || postsData[postIndex].excerpt,
+        content: content || postsData[postIndex].content,
+        author: author || postsData[postIndex].author,
+        category: category || postsData[postIndex].category,
+        thumbnail: thumbnail || postsData[postIndex].thumbnail,
+      };
+      
+      // Save to JSON file
+      try {
+        fs.writeFileSync(postsJsonPath, JSON.stringify({ posts: postsData }, null, 2));
+      } catch (e) {
+        console.warn('Could not save to posts.json:', e.message);
+      }
+      
+      res.json({ success: true, message: 'Post updated successfully' });
     }
-    
-    res.json({ success: true, message: 'Post updated successfully' });
   } catch (error) {
     console.error('Error updating post:', error);
     res.status(500).json({ error: 'Failed to update post' });
@@ -159,16 +218,36 @@ app.put('/api/posts/:id', async (req, res) => {
 app.delete('/api/posts/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const connection = await pool.getConnection();
     
-    const [result] = await connection.query('DELETE FROM posts WHERE id = ?', [id]);
-    connection.release();
-    
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Post not found' });
+    if (useMySQL && pool) {
+      const connection = await pool.getConnection();
+      
+      const [result] = await connection.query('DELETE FROM posts WHERE id = ?', [id]);
+      connection.release();
+      
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+      
+      res.json({ success: true, message: 'Post deleted successfully' });
+    } else {
+      // Delete from JSON data
+      const postIndex = postsData.findIndex(p => p.id === parseInt(id));
+      if (postIndex === -1) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+      
+      postsData.splice(postIndex, 1);
+      
+      // Save to JSON file
+      try {
+        fs.writeFileSync(postsJsonPath, JSON.stringify({ posts: postsData }, null, 2));
+      } catch (e) {
+        console.warn('Could not save to posts.json:', e.message);
+      }
+      
+      res.json({ success: true, message: 'Post deleted successfully' });
     }
-    
-    res.json({ success: true, message: 'Post deleted successfully' });
   } catch (error) {
     console.error('Error deleting post:', error);
     res.status(500).json({ error: 'Failed to delete post' });

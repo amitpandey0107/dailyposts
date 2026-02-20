@@ -95,7 +95,7 @@ app.get('/api/posts', async (req, res) => {
     res.json(posts);
   } catch (error) {
     console.error('Error fetching posts:', error);
-    res.status(500).json({ error: 'Failed to fetch posts' });
+    res.status(500).json({ error: 'Failed to fetch posts. Make sure to run "npm run init-db" first.' });
   }
 });
 

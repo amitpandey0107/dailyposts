@@ -1,4 +1,6 @@
 const mysql = require('mysql2/promise');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const initializeDatabase = async () => {
@@ -37,9 +39,51 @@ const initializeDatabase = async () => {
     await connection.execute(createTableSQL);
     console.log('✓ Posts table created successfully');
 
+    // Load sample posts from JSON file
+    const postsJsonPath = path.join(__dirname, 'public', 'data', 'posts.json');
+    let postsToInsert = [];
+    
+    try {
+      const jsonContent = fs.readFileSync(postsJsonPath, 'utf8');
+      const parsed = JSON.parse(jsonContent);
+      postsToInsert = parsed.posts || [];
+      console.log(`✓ Loaded ${postsToInsert.length} posts from JSON file`);
+    } catch (error) {
+      console.warn('Warning: Could not load posts.json file, skipping sample data insertion');
+    }
+
+    // Insert sample posts if they don't exist
+    for (const post of postsToInsert) {
+      try {
+        const [existing] = await connection.execute(
+          'SELECT id FROM posts WHERE slug = ?',
+          [post.slug]
+        );
+        
+        if (existing.length === 0) {
+          await connection.execute(
+            `INSERT INTO posts (title, slug, excerpt, content, author, category, thumbnail)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+              post.title,
+              post.slug,
+              post.excerpt,
+              post.content,
+              post.author || 'Daily Post',
+              post.category,
+              post.thumbnail || '/images/placeholder-default.jpg',
+            ]
+          );
+          console.log(`✓ Inserted post: ${post.title}`);
+        }
+      } catch (error) {
+        console.warn(`Warning: Could not insert post "${post.title}":`, error.message);
+      }
+    }
+
     // Close the connection
     await connection.end();
-    console.log('Database initialization completed');
+    console.log('✓ Database initialization completed successfully');
     process.exit(0);
   } catch (error) {
     console.error('Error initializing database:', error.message);

@@ -107,45 +107,55 @@ export default function BulkUpload() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
       <Navigation />
 
-      <main className="grow max-w-4xl mx-auto px-4 w-full py-12">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Bulk Upload Posts</h1>
-          <p className="text-gray-600">Import multiple posts from CSV or Excel file</p>
+      <main className="grow max-w-6xl mx-auto px-4 w-full py-12">
+        {/* Header Section */}
+        <div className="mb-12 text-center">
+          <div className="inline-block mb-6">
+            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500 to-purple-500">
+              <span className="text-3xl">📦</span>
+            </div>
+          </div>
+          <h1 className="text-5xl font-bold mb-3 bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Bulk Upload Posts
+          </h1>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Import multiple posts from CSV or Excel file in seconds
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Upload Form */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8">
+            <form onSubmit={handleSubmit} className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl p-8 md:p-12 border border-white/10 space-y-8">
               {error && (
-                <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-8 flex gap-3">
+                <div className="bg-red-500/10 border-2 border-red-500/30 rounded-xl p-4 flex gap-3 backdrop-blur-sm">
                   <span className="text-2xl">⚠️</span>
                   <div>
-                    <h3 className="font-semibold text-red-900">Error</h3>
-                    <p className="text-red-800 text-sm">{error}</p>
+                    <h3 className="font-semibold text-red-400">Error</h3>
+                    <p className="text-red-300 text-sm">{error}</p>
                   </div>
                 </div>
               )}
 
               {success && (
-                <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-8 flex gap-3">
+                <div className="bg-green-500/10 border-2 border-green-500/30 rounded-xl p-4 flex gap-3 backdrop-blur-sm">
                   <span className="text-2xl">✅</span>
                   <div>
-                    <h3 className="font-semibold text-green-900">Success</h3>
-                    <p className="text-green-800 text-sm">{success}</p>
+                    <h3 className="font-semibold text-green-400">Success</h3>
+                    <p className="text-green-300 text-sm">{success}</p>
                   </div>
                 </div>
               )}
 
               {/* File Upload */}
-              <div className="mb-8">
-                <label className="block text-sm font-semibold text-gray-900 mb-4">
-                  Choose File <span className="text-red-600">*</span>
+              <div>
+                <label className="block text-sm font-semibold text-gray-200 mb-4">
+                  Choose File <span className="text-red-400">*</span>
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 transition cursor-pointer relative bg-linear-to-br from-blue-50 to-purple-50">
+                <div className="border-2 border-dashed border-blue-500/50 rounded-2xl p-8 text-center hover:border-blue-400 transition cursor-pointer relative bg-linear-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm">
                   <input
                     type="file"
                     onChange={handleFileChange}
@@ -154,37 +164,49 @@ export default function BulkUpload() {
                     required
                   />
                   <div className="pointer-events-none">
-                    <p className="text-4xl mb-2">📁</p>
-                    <p className="text-sm font-medium text-gray-700 mb-1">
+                    <p className="text-5xl mb-4">📁</p>
+                    <p className="text-sm font-medium text-gray-200 mb-2">
                       {fileName || 'Click to select or drag and drop'}
                     </p>
-                    <p className="text-xs text-gray-500">CSV or Excel (.csv, .xlsx, .xls) - Max 5MB</p>
+                    <p className="text-xs text-gray-400">CSV or Excel (.csv, .xlsx, .xls) - Max 5MB</p>
                   </div>
                 </div>
               </div>
 
               {/* File Format Help */}
-              <div className="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-200">
-                <h3 className="font-semibold text-blue-900 mb-3">📋 Required CSV Format</h3>
-                <p className="text-sm text-blue-800 mb-3">Your file must have these columns in the first row:</p>
-                <div className="bg-white p-3 rounded font-mono text-xs text-gray-700 overflow-x-auto">
+              <div className="bg-blue-500/10 rounded-2xl p-6 border border-blue-500/30 backdrop-blur-sm">
+                <h3 className="font-semibold text-blue-300 mb-3 flex items-center gap-2">
+                  <span className="text-xl">📋</span> Required CSV Format
+                </h3>
+                <p className="text-sm text-blue-200 mb-4">Your file must have these columns in the first row:</p>
+                <div className="bg-white/10 p-4 rounded-lg font-mono text-xs text-gray-300 overflow-x-auto border border-white/10 mb-4">
                   <code>title,excerpt,content,author,category,thumbnail</code>
                 </div>
-                <p className="text-sm text-blue-800 mt-3">• <strong>title</strong>: Post title (required)</p>
-                <p className="text-sm text-blue-800">• <strong>excerpt</strong>: Short summary (required)</p>
-                <p className="text-sm text-blue-800">• <strong>content</strong>: Full post content (required)</p>
-                <p className="text-sm text-blue-800">• <strong>author</strong>: Author name (optional, default: Satish Mehta)</p>
-                <p className="text-sm text-blue-800">• <strong>category</strong>: Category name (required)</p>
-                <p className="text-sm text-blue-800">• <strong>thumbnail</strong>: Image URL (optional)</p>
+                <div className="space-y-2 text-sm text-blue-200">
+                  <p>• <strong>title</strong>: Post title (required)</p>
+                  <p>• <strong>excerpt</strong>: Short summary (required)</p>
+                  <p>• <strong>content</strong>: Full post content (required)</p>
+                  <p>• <strong>author</strong>: Author name (optional, default: Satish Mehta)</p>
+                  <p>• <strong>category</strong>: Category name (required)</p>
+                  <p>• <strong>thumbnail</strong>: Image URL (optional)</p>
+                </div>
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 font-semibold transition-all shadow-lg"
+                className="w-full bg-linear-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:from-gray-600 disabled:to-gray-600 text-white px-8 py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl disabled:shadow-none transform hover:scale-105 disabled:scale-100 flex items-center justify-center gap-2"
               >
-                {loading ? '🔄 Uploading...' : '📤 Upload Posts'}
+                {loading ? (
+                  <>
+                    <span className="animate-spin">⏳</span> Uploading...
+                  </>
+                ) : (
+                  <>
+                    <span>📤</span> Upload Posts
+                  </>
+                )}
               </button>
             </form>
           </div>
@@ -193,33 +215,37 @@ export default function BulkUpload() {
           <div className="space-y-6">
             {/* File Preview */}
             {filePreview.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">📄 File Preview</h3>
-                <div className="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
+              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+                <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                  <span>📄</span> File Preview
+                </h3>
+                <div className="bg-white/5 rounded-lg p-4 max-h-64 overflow-y-auto border border-white/10">
                   {filePreview.map((line, idx) => (
-                    <p key={idx} className="text-xs text-gray-700 font-mono mb-2 truncate">
+                    <p key={idx} className="text-xs text-gray-300 font-mono mb-2 truncate">
                       {line || '(empty line)'}
                     </p>
                   ))}
                 </div>
-                <p className="text-xs text-gray-500 mt-3">Showing first 6 rows...</p>
+                <p className="text-xs text-gray-400 mt-3">Showing first 6 rows...</p>
               </div>
             )}
 
             {/* Upload Results */}
             {result && (
-              <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-600">
-                <h3 className="font-semibold text-gray-900 mb-4">📊 Upload Results</h3>
+              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-green-500/30 p-6">
+                <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                  <span>📊</span> Upload Results
+                </h3>
                 
-                <div className="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                  <p className="text-2xl font-bold text-green-600 mb-1">{result.successCount}</p>
-                  <p className="text-sm text-green-800">posts imported successfully</p>
+                <div className="mb-4 p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+                  <p className="text-3xl font-bold text-green-400 mb-1">{result.successCount}</p>
+                  <p className="text-sm text-green-300">posts imported successfully</p>
                 </div>
 
                 {result.errors.length > 0 && (
-                  <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <p className="text-sm font-semibold text-yellow-900 mb-2">⚠️ Issues ({result.errors.length})</p>
-                    <ul className="text-xs text-yellow-800 space-y-1 max-h-48 overflow-y-auto">
+                  <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/30">
+                    <p className="text-sm font-semibold text-yellow-300 mb-2">⚠️ Issues ({result.errors.length})</p>
+                    <ul className="text-xs text-yellow-300 space-y-1 max-h-48 overflow-y-auto">
                       {result.errors.map((err, idx) => (
                         <li key={idx}>• {err}</li>
                       ))}
@@ -230,13 +256,15 @@ export default function BulkUpload() {
             )}
 
             {/* Example Box */}
-            <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl shadow-lg p-6 border border-purple-200">
-              <h3 className="font-semibold text-gray-900 mb-4">💡 Example CSV Row</h3>
-              <div className="text-xs font-mono text-gray-700 space-y-1 overflow-x-auto">
-                <p className="text-purple-600 font-semibold">CSV Header:</p>
-                <code className="block">title,excerpt,content,author,category,thumbnail</code>
-                <p className="text-purple-600 font-semibold mt-3">Example Data:</p>
-                <code className="block">AI Revolution,AI is changing the world,Full article content here...,Satish Mehta,AI & Future,https://example.com/img.jpg</code>
+            <div className="bg-linear-to-br from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/30 p-6 backdrop-blur-sm">
+              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                <span>💡</span> Example CSV Row
+              </h3>
+              <div className="text-xs font-mono text-gray-300 space-y-2 overflow-x-auto">
+                <p className="text-purple-300 font-semibold">CSV Header:</p>
+                <code className="block bg-white/5 p-2 rounded border border-white/10">title,excerpt,content,author,category,thumbnail</code>
+                <p className="text-purple-300 font-semibold mt-3">Example Data:</p>
+                <code className="block bg-white/5 p-2 rounded border border-white/10 break-all">AI Revolution,AI is changing the world,Full article content here...,Satish Mehta,AI & Future,https://example.com/img.jpg</code>
               </div>
             </div>
           </div>
