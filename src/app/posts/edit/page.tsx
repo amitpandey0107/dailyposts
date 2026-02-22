@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { useAuth } from '@/context/AuthContext';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -20,6 +21,7 @@ interface Post {
 
 export default function EditPosts() {
   const router = useRouter();
+  const { isLoggedIn, loading: authLoading } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,6 +30,13 @@ export default function EditPosts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<'latest' | 'oldest' | 'title'>('latest');
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!authLoading && !isLoggedIn) {
+      router.push('/auth/login');
+    }
+  }, [isLoggedIn, authLoading, router]);
 
   // Fetch posts
   useEffect(() => {
@@ -47,7 +56,9 @@ export default function EditPosts() {
       }
     };
 
-    fetchPosts();
+    if (!authLoading && isLoggedIn) {
+      fetchPosts();
+    }
   }, []);
 
   // Filter posts based on search term

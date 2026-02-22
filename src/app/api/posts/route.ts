@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         author: body.author || "Daily Post",
         category: body.category,
         thumbnail: body.thumbnail || "/images/placeholder-default.jpg",
+        user_id: body.user_id || null,
       }),
     });
 

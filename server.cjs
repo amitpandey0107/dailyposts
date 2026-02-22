@@ -4,6 +4,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
@@ -61,6 +62,132 @@ const pool = mysql.createPool({
 // Health check route
 app.get('/health', (req, res) => {
   res.json({ status: 'Backend server is running' });
+});
+
+// Helper function to hash password
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+// POST register user
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { username, email, password, confirmPassword } = req.body;
+    
+    // Validate required fields
+    if (!username || !email || !password || !confirmPassword) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+    
+    // Validate password match
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match' });
+    }
+    
+    // Validate password length
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+    
+    const connection = await pool.getConnection();
+    
+    // Check if user already exists
+    const [existing] = await connection.query(
+      'SELECT id FROM users WHERE username = ? OR email = ?',
+      [username, email]
+    );
+    
+    if (existing.length > 0) {
+      connection.release();
+      return res.status(400).json({ error: 'Username or email already exists' });
+    }
+    
+    // Hash password
+    const hashedPassword = hashPassword(password);
+    
+    // Insert new user
+    const [result] = await connection.query(
+      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+      [username, email, hashedPassword]
+    );
+    
+    connection.release();
+    
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      user: {
+        id: result.insertId,
+        username,
+        email,
+      },
+    });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
+// POST login user
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    // Validate required fields
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+    
+    const connection = await pool.getConnection();
+    
+    // Find user
+    const [users] = await connection.query(
+      'SELECT id, username, email, password FROM users WHERE username = ? OR email = ?',
+      [username, username]
+    );
+    
+    connection.release();
+    
+    if (users.length === 0) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    const user = users[0];
+    const hashedPassword = hashPassword(password);
+    
+    // Verify password
+    if (user.password !== hashedPassword) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    // Generate a simple token (in production, use JWT)
+    const token = crypto.randomBytes(32).toString('hex');
+    
+    res.json({
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Failed to login' });
+  }
+});
+
+// POST logout user
+app.post('/api/auth/logout', (req, res) => {
+  res.json({ success: true, message: 'Logout successful' });
 });
 
 // POST image upload
@@ -121,10 +248,57 @@ app.get('/api/posts/:slug', async (req, res) => {
   }
 });
 
+// GET user statistics
+app.get('/api/stats/user/:user_id', async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const connection = await pool.getConnection();
+    
+    // Total posts by user
+    const [totalPosts] = await connection.query(
+      'SELECT COUNT(*) as count FROM posts WHERE user_id = ?',
+      [user_id]
+    );
+    
+    // Posts created this month
+    const [monthPosts] = await connection.query(
+      `SELECT COUNT(*) as count FROM posts 
+       WHERE user_id = ? AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())`,
+      [user_id]
+    );
+    
+    // Posts created this week
+    const [weekPosts] = await connection.query(
+      `SELECT COUNT(*) as count FROM posts 
+       WHERE user_id = ? AND WEEK(created_at) = WEEK(NOW()) AND YEAR(created_at) = YEAR(NOW())`,
+      [user_id]
+    );
+    
+    // Posts created today
+    const [todayPosts] = await connection.query(
+      `SELECT COUNT(*) as count FROM posts 
+       WHERE user_id = ? AND DATE(created_at) = DATE(NOW())`,
+      [user_id]
+    );
+    
+    connection.release();
+    
+    res.json({
+      total: totalPosts[0].count,
+      thisMonth: monthPosts[0].count,
+      thisWeek: weekPosts[0].count,
+      today: todayPosts[0].count,
+    });
+  } catch (error) {
+    console.error('Error fetching user statistics:', error);
+    res.status(500).json({ error: 'Failed to fetch user statistics' });
+  }
+});
+
 // POST new post
 app.post('/api/posts', async (req, res) => {
   try {
-    const { title, excerpt, content, author, category, thumbnail } = req.body;
+    const { title, excerpt, content, author, category, thumbnail, user_id } = req.body;
     
     // Validate required fields
     if (!title || !excerpt || !content || !category) {
@@ -152,9 +326,10 @@ app.post('/api/posts', async (req, res) => {
     
     // Insert new post
     const [result] = await connection.query(
-      `INSERT INTO posts (title, slug, excerpt, content, author, category, thumbnail)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO posts (user_id, title, slug, excerpt, content, author, category, thumbnail)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
+        user_id || null,
         title,
         slug,
         excerpt,
@@ -238,6 +413,7 @@ app.post('/api/bulk-upload', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'No file provided' });
     }
     
+    const { user_id } = req.body;
     const Papa = require('papaparse');
     const fileContent = req.file.buffer.toString('utf-8');
     
@@ -281,9 +457,10 @@ app.post('/api/bulk-upload', upload.single('file'), async (req, res) => {
         }
         
         await connection.query(
-          `INSERT INTO posts (title, slug, excerpt, content, author, category, thumbnail)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO posts (user_id, title, slug, excerpt, content, author, category, thumbnail)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
+            user_id || null,
             title,
             slug,
             excerpt,

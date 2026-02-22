@@ -1,10 +1,11 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { useAuth } from '@/context/AuthContext';
 
 const CATEGORIES = [
   'Technology',
@@ -27,6 +28,7 @@ interface FormData {
 
 export default function NewPost() {
   const router = useRouter();
+  const { isLoggedIn, loading: authLoading, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -41,6 +43,13 @@ export default function NewPost() {
     category: 'Technology',
     thumbnail: '',
   });
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!authLoading && !isLoggedIn) {
+      router.push('/auth/login');
+    }
+  }, [isLoggedIn, authLoading, router]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -156,6 +165,7 @@ export default function NewPost() {
           author: formData.author || 'Satish Mehta',
           category: formData.category,
           thumbnail: thumbnailUrl,
+          user_id: user?.id || null,
         }),
       });
 
@@ -183,10 +193,10 @@ export default function NewPost() {
       <main className="grow max-w-5xl mx-auto px-4 w-full py-12">
         {/* Header Section */}
         <div className="mb-12 text-center">
-          <div className="inline-block mb-6 p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl border border-blue-500/30">
+          <div className="inline-block mb-6 p-4 bg-gradient-to-br from-blue-500/20 to-orange-500/20 rounded-2xl border border-blue-500/30">
             <span className="text-4xl">✨</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-orange-400 to-green-400 bg-clip-text text-transparent">
             Create Your Story
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto">

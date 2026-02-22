@@ -1,8 +1,10 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { useAuth } from '@/context/AuthContext';
 
 interface UploadResult {
   successCount: number;
@@ -10,12 +12,21 @@ interface UploadResult {
 }
 
 export default function BulkUpload() {
+  const router = useRouter();
+  const { isLoggedIn, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [result, setResult] = useState<UploadResult | null>(null);
   const [fileName, setFileName] = useState('');
   const [filePreview, setFilePreview] = useState<string[]>([]);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!authLoading && !isLoggedIn) {
+      router.push('/auth/login');
+    }
+  }, [isLoggedIn, authLoading, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

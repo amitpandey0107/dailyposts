@@ -16,10 +16,26 @@ const initializeDatabase = async () => {
 
     console.log('Connected to MySQL database');
 
+    // SQL to create users table if it doesn't exist
+    const createUsersTableSQL = `
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `;
+
+    // Execute the create users table query
+    await connection.execute(createUsersTableSQL);
+    console.log('✓ Users table created successfully');
+
     // SQL to create the posts table
     const createTableSQL = `
       CREATE TABLE IF NOT EXISTS posts (
         id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT,
         title VARCHAR(255) NOT NULL,
         slug VARCHAR(255) UNIQUE NOT NULL,
         excerpt TEXT NOT NULL,
@@ -31,7 +47,9 @@ const initializeDatabase = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX idx_slug (slug),
         INDEX idx_category (category),
-        INDEX idx_created_at (created_at)
+        INDEX idx_created_at (created_at),
+        INDEX idx_user_id (user_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
 

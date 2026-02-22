@@ -51,12 +51,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-green-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
       </div>
 
       <Navigation />
@@ -67,8 +67,8 @@ export default function Home() {
           <section className="py-24">
             <div className="max-w-7xl mx-auto px-4 text-center">
               <div className="animate-pulse space-y-4">
-                <div className="h-12 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg w-2/3 mx-auto"></div>
-                <div className="h-16 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg w-full mx-auto"></div>
+                <div className="h-12 bg-gradient-to-r from-blue-500/20 to-orange-500/20 rounded-lg w-2/3 mx-auto"></div>
+                <div className="h-16 bg-gradient-to-r from-blue-500/20 to-orange-500/20 rounded-lg w-full mx-auto"></div>
               </div>
             </div>
           </section>
@@ -92,7 +92,7 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:via-black/50 transition duration-500"></div>
                       <div className="absolute bottom-6 left-6">
-                        <span className="inline-block bg-gradient-to-r from-yellow-400 via-pink-400 to-orange-400 text-slate-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                        <span className="inline-block bg-gradient-to-r from-yellow-400 via-orange-400 to-amber-400 text-slate-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                           ⭐ Featured
                         </span>
                       </div>
@@ -101,7 +101,7 @@ export default function Home() {
                     {/* Featured Content */}
                     <div className="space-y-6">
                       <div className="space-y-4">
-                        <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent leading-tight">
+                        <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-orange-400 to-green-400 bg-clip-text text-transparent leading-tight">
                           {posts[0].title}
                         </h1>
                         <p className="text-gray-300 text-lg leading-relaxed">{posts[0].excerpt}</p>
@@ -112,18 +112,18 @@ export default function Home() {
                           <span className="text-blue-400">✍️</span>
                           <span className="text-gray-300 text-sm">{posts[0].author}</span>
                         </div>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-purple-400/30">
-                          <span className="text-purple-400">📅</span>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-orange-400/30">
+                          <span className="text-orange-400">📅</span>
                           <span className="text-gray-300 text-sm" suppressHydrationWarning>{formatDate(posts[0].created_at)}</span>
                         </div>
-                        <div className="px-4 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 rounded-full text-sm font-semibold border border-blue-500/50">
+                        <div className="px-4 py-2 bg-gradient-to-r from-blue-500/20 to-orange-500/20 text-blue-300 rounded-full text-sm font-semibold border border-blue-500/50">
                           🏷️ {posts[0].category}
                         </div>
                       </div>
 
                       <Link
                         href={`/posts/${posts[0].slug}`}
-                        className="inline-block bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95"
+                        className="inline-block bg-gradient-to-r from-blue-500 via-orange-500 to-green-500 hover:from-blue-600 hover:via-orange-600 hover:to-green-600 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95"
                       >
                         Read Full Story →
                       </Link>
@@ -141,12 +141,12 @@ export default function Home() {
               </div>
 
               {posts.length === 0 ? (
-                <div className="text-center py-20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 backdrop-blur-xl rounded-2xl border border-blue-400/20">
+                <div className="text-center py-20 bg-gradient-to-br from-blue-500/5 to-orange-500/5 backdrop-blur-xl rounded-2xl border border-blue-400/20">
                   <p className="text-5xl mb-4">📝</p>
                   <p className="text-gray-300 text-xl mb-6">No posts yet. Be the first to share your story!</p>
                   <Link
                     href="/posts/new"
-                    className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-xl font-bold hover:shadow-lg transition"
+                    className="inline-block bg-gradient-to-r from-blue-500 to-orange-500 text-white px-8 py-4 rounded-xl font-bold hover:shadow-lg transition"
                   >
                     Create First Post
                   </Link>
@@ -157,7 +157,7 @@ export default function Home() {
                     <Link
                       key={post.id}
                       href={`/posts/${post.slug}`}
-                      className="group bg-gradient-to-br from-slate-800/50 via-slate-800/30 to-slate-800/50 backdrop-blur-xl rounded-2xl border border-blue-400/20 hover:border-purple-400/50 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                      className="group bg-gradient-to-br from-slate-800/50 via-slate-800/30 to-slate-800/50 backdrop-blur-xl rounded-2xl border border-blue-400/20 hover:border-orange-400/50 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                     >
                       {/* Card Image */}
                       <div className="relative h-48 bg-slate-700 overflow-hidden">
@@ -172,7 +172,7 @@ export default function Home() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                         <div className="absolute top-4 right-4">
-                          <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                          <span className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                             {post.category}
                           </span>
                         </div>
@@ -186,7 +186,7 @@ export default function Home() {
                           <span>{post.author}</span>
                         </div>
 
-                        <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition">
+                        <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-orange-400 group-hover:bg-clip-text transition">
                           {post.title}
                         </h3>
 
@@ -215,7 +215,7 @@ export default function Home() {
             </section>
 
             {/* Categories Section */}
-            <section className="bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 py-20 border-y border-blue-400/20 backdrop-blur-sm">
+            <section className="bg-gradient-to-r from-blue-500/5 via-orange-500/5 to-green-500/5 py-20 border-y border-blue-400/20 backdrop-blur-sm">
               <div className="max-w-7xl mx-auto px-4">
                 <div className="mb-16 text-center">
                   <h2 className="text-5xl font-bold text-white mb-4">Explore Categories</h2>
@@ -238,7 +238,7 @@ export default function Home() {
                     return (
                       <div
                         key={category}
-                        className="group bg-gradient-to-br from-slate-800/50 to-slate-800/30 backdrop-blur-xl rounded-2xl border border-blue-400/20 p-8 text-center hover:border-purple-400/50 hover:bg-purple-500/10 transition-all duration-300 transform hover:scale-105"
+                        className="group bg-gradient-to-br from-slate-800/50 to-slate-800/30 backdrop-blur-xl rounded-2xl border border-blue-400/20 p-8 text-center hover:border-orange-400/50 hover:bg-orange-500/10 transition-all duration-300 transform hover:scale-105"
                       >
                         <p className="text-6xl mb-4 group-hover:scale-125 transition-transform duration-300">
                           {categoryEmojis[category] || '📌'}
@@ -247,7 +247,7 @@ export default function Home() {
                         <p className="text-gray-400 mb-6 text-lg">
                           <span className="font-bold text-blue-400">{categoryCount}</span> posts
                         </p>
-                        <button className="text-blue-400 hover:text-purple-400 font-bold text-sm group/btn flex items-center justify-center gap-2 w-full transition">
+                        <button className="text-blue-400 hover:text-orange-400 font-bold text-sm group/btn flex items-center justify-center gap-2 w-full transition">
                           Explore
                           <span className="group-hover/btn:translate-x-1 transition">→</span>
                         </button>
@@ -259,9 +259,9 @@ export default function Home() {
             </section>
 
             {/* CTA Section */}
-            <section className="bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 text-white py-20 my-12 mx-4 md:mx-12 rounded-3xl border border-blue-500/30 backdrop-blur-sm">
+            <section className="bg-gradient-to-r from-blue-600/20 via-orange-600/20 to-green-600/20 text-white py-20 my-12 mx-4 md:mx-12 rounded-3xl border border-blue-500/30 backdrop-blur-sm">
               <div className="max-w-4xl mx-auto px-4 text-center">
-                <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-orange-400 to-green-400 bg-clip-text text-transparent">
                   Ready to Share Your Story?
                 </h2>
                 <p className="text-gray-300 text-xl mb-8">
@@ -269,7 +269,7 @@ export default function Home() {
                 </p>
                 <Link
                   href="/posts/new"
-                  className="inline-block bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95"
+                  className="inline-block bg-gradient-to-r from-blue-500 via-orange-500 to-green-500 hover:from-blue-600 hover:via-orange-600 hover:to-green-600 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95"
                 >
                   ✨ Create Your Post Now
                 </Link>
