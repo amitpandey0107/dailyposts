@@ -1,1 +1,49 @@
-{}
+{
+  "posts": [
+    {
+      "title": "The Future of AI in Technology",
+      "slug": "the-future-of-ai-in-technology",
+      "excerpt": "Exploring how artificial intelligence is reshaping the technology landscape and what the future holds.",
+      "content": "Artificial intelligence is revolutionizing every aspect of technology. From machine learning models that can process vast amounts of data to natural language processing systems that understand human intent, AI is becoming the backbone of modern applications. In this article, we'll explore the latest trends, challenges, and opportunities in AI development.",
+      "author": "John Tech",
+      "category": "Technology",
+      "thumbnail": "/images/ai-future.jpg"
+    },
+    {
+      "title": "Cybersecurity Best Practices for 2026",
+      "slug": "cybersecurity-best-practices-for-2026",
+      "excerpt": "Essential security strategies to protect your data and systems in 2026.",
+      "content": "As cyber threats continue to evolve, staying ahead of security challenges is more important than ever. In 2026, organizations need to focus on zero-trust architecture, implementing multi-factor authentication, regular security audits, and employee training. This comprehensive guide covers the essential best practices you need to implement.",
+      "author": "Security Team",
+      "category": "Security",
+      "thumbnail": "/images/cybersecurity.jpg"
+    },
+    {
+      "title": "Governance in Digital Age",
+      "slug": "governance-in-digital-age",
+      "excerpt": "How governments are adapting to digital transformation and new governance models.",
+      "content": "Digital transformation is changing how governments operate and serve citizens. From blockchain-based verification systems to AI-powered decision support, the digital age brings both opportunities and challenges to governance. This article explores the latest innovations and best practices in digital governance.",
+      "author": "Policy Expert",
+      "category": "Governance",
+      "thumbnail": "/images/governance.jpg"
+    },
+    {
+      "title": "Web Development Trends 2026",
+      "slug": "web-development-trends-2026",
+      "excerpt": "Latest trends and technologies shaping modern web development.",
+      "content": "Web development continues to evolve rapidly. In 2026, we're seeing increased adoption of edge computing, serverless architecture, and advanced frontend frameworks. developers are also focusing more on performance optimization, accessibility, and sustainable web practices. Stay updated with the latest trends in web development.",
+      "author": "Dev Community",
+      "category": "Technology",
+      "thumbnail": "/images/web-dev.jpg"
+    },
+    {
+      "title": "Data Privacy Regulations Worldwide",
+      "slug": "data-privacy-regulations-worldwide",
+      "excerpt": "Understanding global data privacy regulations and compliance requirements.",
+      "content": "Data privacy regulations are becoming increasingly stringent worldwide. GDPR in Europe, CCPA in California, and similar regulations in other regions are setting new standards for how organizations handle personal data. This comprehensive guide covers the major regulations and how to ensure compliance.",
+      "author": "Compliance Officer",
+      "category": "Security",
+      "thumbnail": "/images/privacy.jpg"
+    }
+  ]
+}

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { query } from "@/lib/db";
 
 // GET user statistics
 export async function GET(
@@ -9,20 +8,42 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const userId = parseInt(id);
 
-    const response = await fetch(`${BACKEND_URL}/api/stats/user/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
+    // Total posts by user
+    const totalPostsResult = await query(
+      'SELECT COUNT(*) as count FROM posts WHERE user_id = ?',
+      [userId]
+    );
 
-    if (!response.ok) {
-      throw new Error(`Backend returned ${response.status}`);
-    }
+    // Posts created this month
+    const monthPostsResult = await query(
+      `SELECT COUNT(*) as count FROM posts 
+       WHERE user_id = ? AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())`,
+      [userId]
+    );
 
-    const stats = await response.json();
+    // Posts created this week
+    const weekPostsResult = await query(
+      `SELECT COUNT(*) as count FROM posts 
+       WHERE user_id = ? AND WEEK(created_at) = WEEK(NOW()) AND YEAR(created_at) = YEAR(NOW())`,
+      [userId]
+    );
+
+    // Posts created today
+    const todayPostsResult = await query(
+      `SELECT COUNT(*) as count FROM posts 
+       WHERE user_id = ? AND DATE(created_at) = DATE(NOW())`,
+      [userId]
+    );
+
+    const stats = {
+      total: (totalPostsResult as any)[0]?.count || 0,
+      thisMonth: (monthPostsResult as any)[0]?.count || 0,
+      thisWeek: (weekPostsResult as any)[0]?.count || 0,
+      today: (todayPostsResult as any)[0]?.count || 0,
+    };
+
     return NextResponse.json(stats);
   } catch (error) {
     console.error("Error fetching user statistics:", error);

@@ -1,23 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { query } from "@/lib/db";
 
 // GET all posts
 export async function GET() {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/posts`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Backend returned ${response.status}`);
-    }
-
-    const posts = await response.json();
+    const posts = await query(
+      'SELECT * FROM posts ORDER BY created_at DESC'
+    );
     return NextResponse.json(posts);
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -41,29 +30,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`${BACKEND_URL}/api/posts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: body.title,
-        excerpt: body.excerpt,
-        content: body.content,
-        author: body.author || "Daily Post",
-        category: body.category,
-        thumbnail: body.thumbnail || "/images/placeholder-default.jpg",
-        user_id: body.user_id || null,
-      }),
-    });
+    // Generate slug from title
+    const slug = body.title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-');
 
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(error, { status: response.status });
+    // Check if slug already exists
+    const existing = await query(
+      'SELECT id FROM posts WHERE slug = ?',
+      [slug]
+    );
+
+    if (Array.isArray(existing) && existing.length > 0) {
+      return NextResponse.json(
+        { error: 'A post with this title already exists' },
+        { status: 400 }
+      );
     }
 
-    const newPost = await response.json();
-    return NextResponse.json(newPost, { status: 201 });
+    // Insert new post
+    const result = await query(
+      `INSERT INTO posts (title, slug, excerpt, content, author, category, thumbnail, user_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        body.title,
+        slug,
+        body.excerpt,
+        body.content,
+        body.author || 'Daily Post',
+        body.category,
+        body.thumbnail || '/images/placeholder-default.jpg',
+        body.user_id || null,
+      ]
+    );
+
+    return NextResponse.json(
+      {
+        id: (result as any).insertId,
+        title: body.title,
+        slug,
+        excerpt: body.excerpt,
+        content: body.content,
+        author: body.author || 'Daily Post',
+        category: body.category,
+        thumbnail: body.thumbnail || '/images/placeholder-default.jpg',
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating post:", error);
     return NextResponse.json(

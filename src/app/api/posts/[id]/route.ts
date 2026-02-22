@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { query } from "@/lib/db";
 
 interface Post {
   id: number;
@@ -14,7 +13,7 @@ interface Post {
   thumbnail: string;
 }
 
-// GET single post (works with both ID and slug)
+// GET single post by slug
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -22,25 +21,19 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const response = await fetch(`${BACKEND_URL}/api/posts/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
+    const posts = await query(
+      'SELECT * FROM posts WHERE slug = ?',
+      [id]
+    );
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return NextResponse.json(
-          { error: "Post not found" },
-          { status: 404 }
-        );
-      }
-      throw new Error(`Backend returned ${response.status}`);
+    if (!Array.isArray(posts) || posts.length === 0) {
+      return NextResponse.json(
+        { error: "Post not found" },
+        { status: 404 }
+      );
     }
 
-    const post: Post = await response.json();
+    const post: Post = (posts as any)[0];
     return NextResponse.json(post);
   } catch (error) {
     console.error("Error fetching post:", error);
@@ -68,28 +61,43 @@ export async function PUT(
       );
     }
 
-    const response = await fetch(`${BACKEND_URL}/api/posts/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: body.title,
-        excerpt: body.excerpt,
-        content: body.content,
-        author: body.author || "Satish Mehta",
-        category: body.category,
-        thumbnail: body.thumbnail || "/images/placeholder-default.jpg",
-      }),
-    });
+    // First, find the post by slug or ID
+    const posts = await query(
+      'SELECT id FROM posts WHERE slug = ? OR id = ?',
+      [id, parseInt(id) || 0]
+    );
 
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(error, { status: response.status });
+    if (!Array.isArray(posts) || posts.length === 0) {
+      return NextResponse.json(
+        { error: "Post not found" },
+        { status: 404 }
+      );
     }
 
-    const result = await response.json();
-    return NextResponse.json(result);
+    const postId = (posts as any)[0].id;
+
+    // Update the post
+    await query(
+      `UPDATE posts SET title = ?, excerpt = ?, content = ?, author = ?, category = ?, thumbnail = ?, updated_at = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+      [
+        body.title,
+        body.excerpt,
+        body.content,
+        body.author || "Daily Post",
+        body.category,
+        body.thumbnail || "/images/placeholder-default.jpg",
+        postId
+      ]
+    );
+
+    // Return updated post
+    const updatedPosts = await query(
+      'SELECT * FROM posts WHERE id = ?',
+      [postId]
+    );
+
+    return NextResponse.json((updatedPosts as any)[0]);
   } catch (error) {
     console.error("Error updating post:", error);
     return NextResponse.json(
@@ -107,20 +115,25 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const response = await fetch(`${BACKEND_URL}/api/posts/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // First, find the post by slug or ID
+    const posts = await query(
+      'SELECT id FROM posts WHERE slug = ? OR id = ?',
+      [id, parseInt(id) || 0]
+    );
 
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(error, { status: response.status });
+    if (!Array.isArray(posts) || posts.length === 0) {
+      return NextResponse.json(
+        { error: "Post not found" },
+        { status: 404 }
+      );
     }
 
-    const result = await response.json();
-    return NextResponse.json(result);
+    const postId = (posts as any)[0].id;
+
+    // Delete the post
+    await query('DELETE FROM posts WHERE id = ?', [postId]);
+
+    return NextResponse.json({ success: true, message: "Post deleted successfully" });
   } catch (error) {
     console.error("Error deleting post:", error);
     return NextResponse.json(

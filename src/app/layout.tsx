@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning>
         <RootLayoutClient fontVariables={`${geistSans.variable} ${geistMono.variable}`}>
           {children}
         </RootLayoutClient>
