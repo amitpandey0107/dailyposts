@@ -5,14 +5,11 @@ import { useRouter, useParams } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
-const CATEGORIES = [
-  'Technology',
-  'Governance',
-  'Security',
-  'AI & Future',
-  'Business',
-  'Media & Society',
-];
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
 
 interface Post {
   id: number;
@@ -35,19 +32,35 @@ export default function EditPost() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',
     author: '',
-    category: 'Technology',
+    category: '',
     thumbnail: '',
   });
 
+  // Fetch categories
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchCategories = async () => {
       try {
-        // Get post by ID from backend
+        const response = await fetch('/api/categories');
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
         const response = await fetch(`/api/posts?id=${postId}`);
         if (!response.ok) throw new Error('Failed to fetch post');
         
@@ -224,12 +237,19 @@ export default function EditPost() {
                 onChange={handleChange}
                 className="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition backdrop-blur-sm cursor-pointer"
                 required
+                disabled={categoriesLoading}
               >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat} className="bg-gray-800">
-                    {cat}
-                  </option>
-                ))}
+                {categoriesLoading ? (
+                  <option value="">Loading categories...</option>
+                ) : categories.length === 0 ? (
+                  <option value="">No categories available</option>
+                ) : (
+                  categories.map((cat) => (
+                    <option key={cat.id} value={cat.name} className="bg-gray-800">
+                      {cat.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 

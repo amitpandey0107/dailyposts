@@ -17,25 +17,41 @@ interface Post {
   thumbnail: string;
 }
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  emoji: string;
+}
+
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/posts');
-        const data = await response.json();
-        setPosts(Array.isArray(data) ? data : []);
+        const [postsResponse, categoriesResponse] = await Promise.all([
+          fetch('/api/posts'),
+          fetch('/api/categories'),
+        ]);
+
+        const postsData = await postsResponse.json();
+        const categoriesData = await categoriesResponse.json();
+
+        setPosts(Array.isArray(postsData) ? postsData : []);
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching data:', error);
         setPosts([]);
+        setCategories([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
+    fetchData();
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -222,41 +238,43 @@ export default function Home() {
                   <p className="text-gray-400 text-xl">Find stories in your areas of interest</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {['Technology', 'Governance', 'Security', 'AI & Future', 'Business', 'Media & Society'].map((category) => {
-                    const categoryEmojis: Record<string, string> = {
-                      'Technology': '💻',
-                      'Governance': '🏛️',
-                      'Security': '🔒',
-                      'AI & Future': '🤖',
-                      'Business': '📊',
-                      'Media & Society': '📰',
-                    };
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-pulse space-y-4">
+                      <div className="h-20 bg-gradient-to-r from-blue-500/20 to-orange-500/20 rounded-lg w-full mx-auto"></div>
+                    </div>
+                  </div>
+                ) : categories.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    <p className="text-lg">No categories available yet.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {categories.map((category) => {
+                      const categoryCount = posts.filter((p) => p.category === category.name).length;
 
-                    const categoryCount = posts.filter((p) => p.category === category).length;
-                    const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
-
-                    return (
-                      <Link
-                        key={category}
-                        href={`/posts/category/${categorySlug}`}
-                        className="group bg-gradient-to-br from-slate-800/50 to-slate-800/30 backdrop-blur-xl rounded-2xl border border-blue-400/20 p-8 text-center hover:border-orange-400/50 hover:bg-orange-500/10 transition-all duration-300 transform hover:scale-105"
-                      >
-                        <p className="text-6xl mb-4 group-hover:scale-125 transition-transform duration-300">
-                          {categoryEmojis[category] || '📌'}
-                        </p>
-                        <h3 className="text-2xl font-bold text-white mb-2">{category}</h3>
-                        <p className="text-gray-400 mb-6 text-lg">
-                          <span className="font-bold text-blue-400">{categoryCount}</span> posts
-                        </p>
-                        <div className="text-blue-400 hover:text-orange-400 font-bold text-sm group/btn flex items-center justify-center gap-2 w-full transition">
-                          Explore
-                          <span className="group-hover/btn:translate-x-1 transition">→</span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
+                      return (
+                        <Link
+                          key={category.id}
+                          href={`/posts/category/${category.slug}`}
+                          className="group bg-gradient-to-br from-slate-800/50 to-slate-800/30 backdrop-blur-xl rounded-2xl border border-blue-400/20 p-8 text-center hover:border-orange-400/50 hover:bg-orange-500/10 transition-all duration-300 transform hover:scale-105"
+                        >
+                          <p className="text-6xl mb-4 group-hover:scale-125 transition-transform duration-300">
+                            {category.emoji || '📌'}
+                          </p>
+                          <h3 className="text-2xl font-bold text-white mb-2">{category.name}</h3>
+                          <p className="text-gray-400 mb-6 text-lg">
+                            <span className="font-bold text-blue-400">{categoryCount}</span> posts
+                          </p>
+                          <div className="text-blue-400 hover:text-orange-400 font-bold text-sm group/btn flex items-center justify-center gap-2 w-full transition">
+                            Explore
+                            <span className="group-hover/btn:translate-x-1 transition">→</span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </section>
 

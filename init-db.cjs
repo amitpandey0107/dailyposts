@@ -34,10 +34,59 @@ const initializeDatabase = async () => {
     await connection.execute(createUsersTableSQL);
     console.log('✓ Users table created successfully');
 
+    // SQL to create the categories table
+    const createCategoriesTableSQL = `
+      CREATE TABLE IF NOT EXISTS categories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) UNIQUE NOT NULL,
+        slug VARCHAR(100) UNIQUE NOT NULL,
+        description TEXT,
+        emoji VARCHAR(10),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_name (name),
+        INDEX idx_slug (slug)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `;
+
+    // Execute the create categories table query
+    await connection.execute(createCategoriesTableSQL);
+    console.log('✓ Categories table created successfully');
+
+    // Insert default categories if they don't exist
+    const defaultCategories = [
+      { name: 'Technology', slug: 'technology', emoji: '💻' },
+      { name: 'Governance', slug: 'governance', emoji: '🏛️' },
+      { name: 'Security', slug: 'security', emoji: '🔒' },
+      { name: 'AI & Future', slug: 'ai-future', emoji: '🤖' },
+      { name: 'Business', slug: 'business', emoji: '📊' },
+      { name: 'Media & Society', slug: 'media-society', emoji: '📰' }
+    ];
+
+    for (const category of defaultCategories) {
+      try {
+        const [existing] = await connection.execute(
+          'SELECT id FROM categories WHERE slug = ?',
+          [category.slug]
+        );
+
+        if (existing.length === 0) {
+          await connection.execute(
+            `INSERT INTO categories (name, slug, emoji) VALUES (?, ?, ?)`,
+            [category.name, category.slug, category.emoji]
+          );
+          console.log(`✓ Inserted category: ${category.name}`);
+        }
+      } catch (error) {
+        console.warn(`Warning: Could not insert category "${category.name}":`, error.message);
+      }
+    }
+
     // SQL to create the posts table
     const createTableSQL = `
       CREATE TABLE IF NOT EXISTS posts (
         id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT,
         title VARCHAR(255) NOT NULL,
         slug VARCHAR(255) UNIQUE NOT NULL,
         excerpt TEXT NOT NULL,
@@ -49,7 +98,9 @@ const initializeDatabase = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX idx_slug (slug),
         INDEX idx_category (category),
-        INDEX idx_created_at (created_at)
+        INDEX idx_created_at (created_at),
+        INDEX idx_user_id (user_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
 

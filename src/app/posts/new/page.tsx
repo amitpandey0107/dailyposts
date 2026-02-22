@@ -7,14 +7,11 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/context/AuthContext';
 
-const CATEGORIES = [
-  'Technology',
-  'Governance',
-  'Security',
-  'AI & Future',
-  'Business',
-  'Media & Society',
-];
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
 
 interface FormData {
   title: string;
@@ -35,12 +32,14 @@ export default function NewPost() {
   const [imagePreview, setImagePreview] = useState<string>('');
   const [uploadedFileName, setUploadedFileName] = useState<string>('');
   const [imageSource, setImageSource] = useState<'upload' | 'url'>('upload');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [formData, setFormData] = useState<FormData>({
     title: '',
     excerpt: '',
     content: '',
     author: 'Satish Mehta',
-    category: 'Technology',
+    category: '',
     thumbnail: '',
   });
 
@@ -50,6 +49,32 @@ export default function NewPost() {
       router.push('/auth/login');
     }
   }, [isLoggedIn, authLoading, router]);
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(Array.isArray(data) ? data : []);
+          // Set the first category as default
+          if (Array.isArray(data) && data.length > 0) {
+            setFormData((prev) => ({
+              ...prev,
+              category: data[0].name,
+            }));
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -272,12 +297,19 @@ export default function NewPost() {
                 onChange={handleChange}
                 className="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition backdrop-blur-sm cursor-pointer"
                 required
+                disabled={categoriesLoading}
               >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat} className="bg-gray-800">
-                    {cat}
-                  </option>
-                ))}
+                {categoriesLoading ? (
+                  <option value="">Loading categories...</option>
+                ) : categories.length === 0 ? (
+                  <option value="">No categories available</option>
+                ) : (
+                  categories.map((cat) => (
+                    <option key={cat.id} value={cat.name} className="bg-gray-800">
+                      {cat.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
           </div>

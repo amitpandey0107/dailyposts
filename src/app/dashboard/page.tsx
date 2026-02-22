@@ -14,6 +14,13 @@ interface Statistics {
   today: number;
 }
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  emoji: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { isLoggedIn, user, loading } = useAuth();
@@ -24,12 +31,34 @@ export default function DashboardPage() {
     today: 0,
   });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
+  const [categoryEmoji, setCategoryEmoji] = useState('📌');
+  const [categoryLoading, setCategoryLoading] = useState(false);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
       router.push('/auth/login');
     }
   }, [isLoggedIn, loading, router]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -52,6 +81,42 @@ export default function DashboardPage() {
       fetchStats();
     }
   }, [user?.id, loading, isLoggedIn]);
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCategoryLoading(true);
+    setCategoryError(null);
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: categoryName,
+          emoji: categoryEmoji,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        setCategoryError(error.error || 'Failed to add category');
+        return;
+      }
+
+      const newCategory = await response.json();
+      setCategories([...categories, newCategory]);
+      setCategoryName('');
+      setCategoryEmoji('📌');
+      setShowAddCategory(false);
+    } catch (error) {
+      console.error('Error adding category:', error);
+      setCategoryError('Failed to add category');
+    } finally {
+      setCategoryLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -200,7 +265,84 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Quick Tips Section */}
+        {/* Category Management Section */}
+        <section className="py-16 md:py-24 border-b border-blue-500/20">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">Manage Categories</h2>
+              <button
+                onClick={() => setShowAddCategory(!showAddCategory)}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg font-bold transition-all"
+              >
+                {showAddCategory ? '✕ Cancel' : '+ Add Category'}
+              </button>
+            </div>
+
+            {showAddCategory && (
+              <div className="mb-8 bg-gradient-to-br from-blue-500/10 to-orange-500/10 border border-blue-500/30 rounded-xl p-6">
+                <form onSubmit={handleAddCategory} className="space-y-4">
+                  <div>
+                    <label className="block text-white mb-2 font-semibold">Category Name</label>
+                    <input
+                      type="text"
+                      value={categoryName}
+                      onChange={(e) => setCategoryName(e.target.value)}
+                      placeholder="e.g., AI & Machine Learning"
+                      className="w-full px-4 py-3 bg-slate-900/50 border border-blue-400/30 rounded-lg text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none transition"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white mb-2 font-semibold">Emoji</label>
+                    <input
+                      type="text"
+                      value={categoryEmoji}
+                      onChange={(e) => setCategoryEmoji(e.target.value)}
+                      placeholder="e.g., 🤖"
+                      maxLength={2}
+                      className="w-full px-4 py-3 bg-slate-900/50 border border-blue-400/30 rounded-lg text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none transition"
+                    />
+                  </div>
+                  {categoryError && (
+                    <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                      {categoryError}
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={categoryLoading}
+                    className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-bold transition-all"
+                  >
+                    {categoryLoading ? 'Adding...' : 'Add Category'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {categories.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-gray-400">
+                  <p className="text-lg">No categories yet. Create one to get started!</p>
+                </div>
+              ) : (
+                categories.map((category) => (
+                  <div
+                    key={category.id}
+                    className="bg-gradient-to-br from-slate-800/50 to-slate-800/30 backdrop-blur-xl rounded-lg border border-blue-400/20 p-4 hover:border-orange-400/50 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{category.emoji}</span>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-white">{category.name}</h3>
+                        <p className="text-sm text-gray-400">{category.slug}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </section>
         <section className="py-12 border-t border-blue-500/20">
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-2xl font-bold text-white mb-8">Quick Tips</h2>

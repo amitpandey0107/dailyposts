@@ -18,35 +18,58 @@ interface Post {
   thumbnail: string;
 }
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  emoji: string;
+}
+
 export default function CategoryPage() {
   const params = useParams();
   const categorySlug = params.category as string;
   const categoryName = decodeURIComponent(categorySlug).replace(/-/g, ' ');
 
   const [posts, setPosts] = useState<Post[]>([]);
+  const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`/api/posts/category/${categorySlug}`);
-        if (!response.ok) {
+        // Fetch category data and posts in parallel
+        const [postsResponse, categoriesResponse] = await Promise.all([
+          fetch(`/api/posts/category/${categorySlug}`),
+          fetch('/api/categories'),
+        ]);
+
+        if (!postsResponse.ok) {
           throw new Error('Failed to fetch posts');
         }
-        const data = await response.json();
-        setPosts(Array.isArray(data) ? data : []);
+
+        const postsData = await postsResponse.json();
+        const categoriesData = await categoriesResponse.json();
+
+        // Find the matching category
+        const foundCategory = Array.isArray(categoriesData)
+          ? categoriesData.find((c: Category) => c.slug === categorySlug)
+          : null;
+
+        setPosts(Array.isArray(postsData) ? postsData : []);
+        setCategory(foundCategory || null);
         setError(null);
       } catch (err) {
-        console.error('Error fetching posts:', err);
+        console.error('Error fetching data:', err);
         setError('Failed to load posts. Please try again later.');
         setPosts([]);
+        setCategory(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
+    fetchData();
   }, [categorySlug]);
 
   const formatDate = (dateString: string) => {
@@ -59,15 +82,6 @@ export default function CategoryPage() {
     } catch {
       return dateString.split('T')[0];
     }
-  };
-
-  const categoryEmojis: Record<string, string> = {
-    'Technology': '💻',
-    'Governance': '🏛️',
-    'Security': '🔒',
-    'AI & Future': '🤖',
-    'Business': '📊',
-    'Media & Society': '📰',
   };
 
   return (
@@ -86,13 +100,13 @@ export default function CategoryPage() {
         <section className="py-16 md:py-24 border-b border-blue-500/20">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <div className="text-7xl md:text-8xl mb-6">
-              {categoryEmojis[categoryName] || '📌'}
+              {category?.emoji || '📌'}
             </div>
             <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-blue-400 via-orange-400 to-green-400 bg-clip-text text-transparent mb-4 leading-tight">
-              {categoryName}
+              {category?.name || categoryName}
             </h1>
             <p className="text-gray-400 text-xl md:text-2xl mb-6">
-              Explore all stories in <span className="text-blue-400 font-semibold">{categoryName}</span>
+              Explore all stories in <span className="text-blue-400 font-semibold">{category?.name || categoryName}</span>
             </p>
             <p className="text-gray-500 text-lg">
               {loading ? 'Loading...' : `${posts.length} ${posts.length === 1 ? 'post' : 'posts'} found`}
