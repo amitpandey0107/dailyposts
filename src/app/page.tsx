@@ -234,10 +234,12 @@ export default function Home() {
                     };
 
                     const categoryCount = posts.filter((p) => p.category === category).length;
+                    const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
 
                     return (
-                      <div
+                      <Link
                         key={category}
+                        href={`/posts/category/${categorySlug}`}
                         className="group bg-gradient-to-br from-slate-800/50 to-slate-800/30 backdrop-blur-xl rounded-2xl border border-blue-400/20 p-8 text-center hover:border-orange-400/50 hover:bg-orange-500/10 transition-all duration-300 transform hover:scale-105"
                       >
                         <p className="text-6xl mb-4 group-hover:scale-125 transition-transform duration-300">
@@ -247,11 +249,11 @@ export default function Home() {
                         <p className="text-gray-400 mb-6 text-lg">
                           <span className="font-bold text-blue-400">{categoryCount}</span> posts
                         </p>
-                        <button className="text-blue-400 hover:text-orange-400 font-bold text-sm group/btn flex items-center justify-center gap-2 w-full transition">
+                        <div className="text-blue-400 hover:text-orange-400 font-bold text-sm group/btn flex items-center justify-center gap-2 w-full transition">
                           Explore
                           <span className="group-hover/btn:translate-x-1 transition">→</span>
-                        </button>
-                      </div>
+                        </div>
+                      </Link>
                     );
                   })}
                 </div>
