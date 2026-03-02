@@ -17,6 +17,7 @@ interface Post {
   category: string;
   created_at: string;
   thumbnail: string;
+  post_number?: string;
 }
 
 export default function EditPosts() {
@@ -116,6 +117,20 @@ export default function EditPosts() {
       });
     } catch {
       return dateString.split('T')[0];
+    }
+  };
+
+  // Format time
+  const formatDateTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return '';
     }
   };
 
@@ -224,10 +239,12 @@ export default function EditPosts() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10 bg-white/5">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Post #</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Title</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Author</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Category</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Published</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Time</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
                   </tr>
                 </thead>
@@ -239,6 +256,11 @@ export default function EditPosts() {
                         index % 2 === 0 ? 'bg-white/2' : ''
                       }`}
                     >
+                      <td className="px-6 py-4">
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                          #{post.post_number}
+                        </span>
+                      </td>
                       <td className="px-6 py-4">
                         <div>
                           <p className="font-medium text-white truncate max-w-xs">{post.title}</p>
@@ -252,6 +274,7 @@ export default function EditPosts() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-300">{formatDate(post.created_at)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-300" suppressHydrationWarning>{formatDateTime(post.created_at)}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           <button

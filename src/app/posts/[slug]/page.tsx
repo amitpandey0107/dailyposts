@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 interface Post {
   id: number;
@@ -15,11 +16,13 @@ interface Post {
   category: string;
   created_at: string;
   thumbnail: string;
+  post_number?: string;
 }
 
 export default function PostDetail() {
   const params = useParams();
   const slug = params.slug as string;
+  const { isLoggedIn } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -54,6 +57,19 @@ export default function PostDetail() {
       });
     } catch {
       return dateString.split('T')[0];
+    }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return '';
     }
   };
 
@@ -93,8 +109,9 @@ export default function PostDetail() {
           <Link href="/" className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition">
             ← Back to Home
           </Link>
-          <div className="text-sm text-gray-400">
-            Post #{post.id}
+          <div className="flex items-center gap-4 text-sm text-gray-300">
+            <span className="bg-blue-500/40 px-3 py-1 rounded-full font-semibold">Post #{post.post_number}</span>
+            {/* <span suppressHydrationWarning className="bg-orange-500/40 px-3 py-1 rounded-full">🕐 {formatDateTime(post.created_at)}</span> */}
           </div>
         </div>
       </header>
@@ -125,7 +142,7 @@ export default function PostDetail() {
           <div className="flex flex-wrap items-center gap-6 mb-6 text-sm">
             <div className="flex items-center gap-2">
               <span className="text-blue-400">📅</span>
-              <span className="text-gray-300" suppressHydrationWarning>{formatDate(post.created_at)}</span>
+              <span className="text-gray-300" suppressHydrationWarning>{formatDate(post.created_at)}, {formatDateTime(post.created_at)}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-blue-400">✍️</span>
@@ -194,16 +211,18 @@ export default function PostDetail() {
         </div>
 
         {/* Call to Action */}
-        <div className="mt-20 bg-gradient-to-r from-blue-600/30 to-purple-600/30 rounded-2xl p-12 border border-blue-500/30 text-center backdrop-blur-sm">
-          <h3 className="text-2xl font-bold mb-3">Want to share your story?</h3>
-          <p className="text-gray-300 mb-6">Join our community of writers and create your first post today.</p>
-          <Link
-            href="/posts/new"
-            className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-4 rounded-lg font-bold transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            ✨ Create Your Post
-          </Link>
-        </div>
+        {isLoggedIn && (
+          <div className="mt-20 bg-gradient-to-r from-blue-600/30 to-purple-600/30 rounded-2xl p-12 border border-blue-500/30 text-center backdrop-blur-sm">
+            <h3 className="text-2xl font-bold mb-3">Want to share your story?</h3>
+            <p className="text-gray-300 mb-6">Join our community of writers and create your first post today.</p>
+            <Link
+              href="/posts/new"
+              className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-4 rounded-lg font-bold transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              ✨ Create Your Post
+            </Link>
+          </div>
+        )}
       </main>
     </div>
   );

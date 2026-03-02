@@ -34,7 +34,11 @@ export async function GET(
     }
 
     const post: Post = (posts as any)[0];
-    return NextResponse.json(post);
+    const postWithNumber = {
+      ...post,
+      post_number: String((post as any).id).padStart(4, '0')
+    };
+    return NextResponse.json(postWithNumber);
   } catch (error) {
     console.error("Error fetching post:", error);
     return NextResponse.json(

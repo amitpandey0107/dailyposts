@@ -15,6 +15,8 @@ interface Post {
   category: string;
   created_at: string;
   thumbnail: string;
+  post_number?: string;
+  post_index?: number;
 }
 
 interface Category {
@@ -66,6 +68,19 @@ export default function Home() {
     }
   };
 
+  const formatDateTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return '';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -107,10 +122,18 @@ export default function Home() {
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:via-black/50 transition duration-500"></div>
-                      <div className="absolute bottom-6 left-6">
-                        <span className="inline-block bg-gradient-to-r from-yellow-400 via-orange-400 to-amber-400 text-slate-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                          ⭐ Featured
-                        </span>
+                      <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
+                        <div>
+                          <span className="inline-block bg-gradient-to-r from-yellow-400 via-orange-400 to-amber-400 text-slate-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg mb-3">
+                            ⭐ Featured
+                          </span>
+                          <div className="flex gap-3 text-xs text-gray-200 font-semibold">
+                            <span className="bg-blue-500/40 px-3 py-1 rounded-full">Post #{posts[0].post_number}</span>
+                            <span className="bg-orange-500/40 px-3 py-1 rounded-full" suppressHydrationWarning>
+                              🕐 {formatDateTime(posts[0].created_at)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -191,6 +214,12 @@ export default function Home() {
                           <span className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                             {post.category}
                           </span>
+                        </div>
+                        <div className="absolute bottom-3 left-3 right-3 flex flex-col gap-2">
+                          <div className="flex gap-2 text-xs">
+                            <span className="bg-blue-500/60 text-white px-2 py-1 rounded font-bold">#{post.post_number}</span>
+                            {/* <span className="bg-orange-500/60 text-white px-2 py-1 rounded text-xs" suppressHydrationWarning>🕐 {formatDateTime(post.created_at)}</span> */}
+                          </div>
                         </div>
                       </div>
 

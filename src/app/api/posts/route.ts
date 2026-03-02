@@ -7,7 +7,15 @@ export async function GET() {
     const posts = await query(
       'SELECT * FROM posts ORDER BY created_at DESC'
     );
-    return NextResponse.json(posts);
+    
+    // Add formatted post number to each post
+    const postsWithNumbers = (Array.isArray(posts) ? posts : []).map((post: any, index: number) => ({
+      ...post,
+      post_number: String(post.id).padStart(4, '0'),
+      post_index: index + 1
+    }));
+    
+    return NextResponse.json(postsWithNumbers);
   } catch (error) {
     console.error("Error fetching posts:", error);
     return NextResponse.json(

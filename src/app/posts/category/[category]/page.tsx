@@ -16,6 +16,7 @@ interface Post {
   category: string;
   created_at: string;
   thumbnail: string;
+  post_number?: string;
 }
 
 interface Category {
@@ -81,6 +82,19 @@ export default function CategoryPage() {
       });
     } catch {
       return dateString.split('T')[0];
+    }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return '';
     }
   };
 
@@ -163,6 +177,12 @@ export default function CategoryPage() {
                         {post.category}
                       </span>
                     </div>
+                    <div className="absolute bottom-3 left-3 right-3 flex flex-col gap-2">
+                      <div className="flex gap-2 text-xs">
+                        <span className="bg-blue-500/60 text-white px-2 py-1 rounded font-bold">#{post.post_number}</span>
+                        <span className="bg-orange-500/60 text-white px-2 py-1 rounded text-xs" suppressHydrationWarning>🕐 {formatDateTime(post.created_at)}</span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Post Content */}
@@ -173,15 +193,21 @@ export default function CategoryPage() {
                     <p className="text-gray-300 text-sm line-clamp-3">{post.excerpt}</p>
 
                     <div className="space-y-4 pt-4 border-t border-blue-400/20">
-                      <div className="flex items-center justify-between text-sm text-gray-400">
-                        <span className="flex items-center gap-2">
-                          <span>✍️</span>
-                          {post.author}
-                        </span>
-                        <span suppressHydrationWarning className="flex items-center gap-2">
-                          <span>📅</span>
-                          {formatDate(post.created_at)}
-                        </span>
+                      <div className="flex flex-col text-sm text-gray-400 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-2">
+                            <span>✍️</span>
+                            {post.author}
+                          </span>
+                          <span suppressHydrationWarning className="flex items-center gap-2">
+                            <span>📅</span>
+                            {formatDate(post.created_at)}
+                          </span>
+                        </div>
+                        <div suppressHydrationWarning className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">Posted at</span>
+                          <span className="text-xs font-semibold text-blue-400">{formatDateTime(post.created_at)}</span>
+                        </div>
                       </div>
 
                       <Link
