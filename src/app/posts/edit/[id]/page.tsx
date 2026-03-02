@@ -61,6 +61,11 @@ export default function EditPost() {
 
     fetchCategories();
   }, []);
+
+  // Fetch post on mount
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
         const response = await fetch(`/api/posts?id=${postId}`);
         if (!response.ok) throw new Error('Failed to fetch post');
         
