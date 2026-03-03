@@ -32,7 +32,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
         const [postsResponse, categoriesResponse] = await Promise.all([
           fetch('/api/posts'),
@@ -51,7 +51,7 @@ export default function Home() {
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchData();
   }, []);

@@ -37,7 +37,7 @@ export default function CategoryPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
         // Fetch category data and posts in parallel
         const [postsResponse, categoriesResponse] = await Promise.all([

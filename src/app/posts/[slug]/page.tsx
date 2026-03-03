@@ -28,7 +28,7 @@ export default function PostDetail() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchPost = async () => {
+    async function fetchPost() {
       try {
         const response = await fetch(`/api/posts/${slug}`);
         if (!response.ok) {
@@ -41,7 +41,7 @@ export default function PostDetail() {
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     if (slug) {
       fetchPost();

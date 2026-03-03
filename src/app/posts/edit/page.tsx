@@ -41,7 +41,7 @@ export default function EditPosts() {
 
   // Fetch posts
   useEffect(() => {
-    const fetchPosts = async () => {
+    async function fetchPosts() {
       try {
         setLoading(true);
         const response = await fetch('/api/posts');
@@ -55,7 +55,7 @@ export default function EditPosts() {
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     if (!authLoading && isLoggedIn) {
       fetchPosts();

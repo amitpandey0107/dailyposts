@@ -45,7 +45,7 @@ export default function DashboardPage() {
   }, [isLoggedIn, loading, router]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    async function fetchCategories() {
       try {
         const response = await fetch('/api/categories');
         if (response.ok) {
@@ -55,13 +55,13 @@ export default function DashboardPage() {
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
-    };
+    }
 
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    async function fetchStats() {
       if (user?.id) {
         try {
           const response = await fetch(`/api/stats/user/${user.id}`);
@@ -75,7 +75,7 @@ export default function DashboardPage() {
           setStatsLoading(false);
         }
       }
-    };
+    }
 
     if (!loading && isLoggedIn && user?.id) {
       fetchStats();

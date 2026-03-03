@@ -52,7 +52,7 @@ export default function NewPost() {
 
   // Fetch categories
   useEffect(() => {
-    const fetchCategories = async () => {
+    async function fetchCategories() {
       try {
         const response = await fetch('/api/categories');
         if (response.ok) {
@@ -71,7 +71,7 @@ export default function NewPost() {
       } finally {
         setCategoriesLoading(false);
       }
-    };
+    }
 
     fetchCategories();
   }, []);

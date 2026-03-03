@@ -45,7 +45,7 @@ export default function EditPost() {
 
   // Fetch categories
   useEffect(() => {
-    const fetchCategories = async () => {
+    async function fetchCategories() {
       try {
         const response = await fetch('/api/categories');
         if (response.ok) {
@@ -57,21 +57,21 @@ export default function EditPost() {
       } finally {
         setCategoriesLoading(false);
       }
-    };
+    }
 
     fetchCategories();
   }, []);
 
   // Fetch post on mount
   useEffect(() => {
-    const fetchPost = async () => {
+    async function fetchPost() {
       try {
         const response = await fetch(`/api/posts?id=${postId}`);
         if (!response.ok) throw new Error('Failed to fetch post');
-        
+
         const posts = await response.json();
         const foundPost = posts.find((p: Post) => p.id === parseInt(postId));
-        
+
         if (!foundPost) {
           throw new Error('Post not found');
         }
@@ -90,8 +90,8 @@ export default function EditPost() {
       } finally {
         setLoading(false);
       }
-    };
-    
+    }
+
     fetchPost();
   }, [postId]);
 

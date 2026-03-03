@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const checkAuth = async () => {
+    async function checkAuth() {
       try {
         const storedUser = localStorage.getItem('user');
         const storedToken = localStorage.getItem('authToken');
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     checkAuth();
   }, []);
