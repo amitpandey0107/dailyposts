@@ -135,47 +135,47 @@ export default function EditPosts() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navigation />
 
       <main className="grow max-w-7xl mx-auto px-4 w-full py-12">
         {/* Header Section */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-linear-to-br from-blue-500 to-purple-500">
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-red-50">
               <span className="text-2xl">📝</span>
             </div>
-            <h1 className="text-4xl font-bold text-white">Manage Posts</h1>
+            <h1 className="text-4xl font-bold text-gray-900 font-serif">Manage Posts</h1>
           </div>
-          <p className="text-gray-300">Edit, delete, or view your published posts</p>
+          <p className="text-gray-700">Edit, delete, or view your published posts</p>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border-2 border-red-500/30 rounded-xl p-4 mb-6 flex gap-3 backdrop-blur-sm">
+          <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-6 flex gap-3">
             <span className="text-2xl">⚠️</span>
             <div>
-              <h3 className="font-semibold text-red-400">Error</h3>
-              <p className="text-red-300 text-sm">{error}</p>
+              <h3 className="font-semibold text-red-700">Error</h3>
+              <p className="text-red-600 text-sm">{error}</p>
             </div>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-500/10 border-2 border-green-500/30 rounded-xl p-4 mb-6 flex gap-3 backdrop-blur-sm">
+          <div className="bg-green-50 border-2 border-green-300 rounded-xl p-4 mb-6 flex gap-3">
             <span className="text-2xl">✅</span>
             <div>
-              <h3 className="font-semibold text-green-400">Success</h3>
-              <p className="text-green-300 text-sm">{success}</p>
+              <h3 className="font-semibold text-green-700">Success</h3>
+              <p className="text-green-600 text-sm">{success}</p>
             </div>
           </div>
         )}
 
         {/* Controls Section */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-8">
+        <div className="bg-white border border-gray-300 rounded-xl p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Search</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Search</label>
               <input
                 type="text"
                 placeholder="Search by title or author..."
@@ -184,20 +184,20 @@ export default function EditPosts() {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-red-700 focus:border-transparent transition"
               />
             </div>
 
             {/* Sort By */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Sort By</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Sort By</label>
               <select
                 value={sortBy}
                 onChange={(e) => {
                   setSortBy(e.target.value as 'latest' | 'oldest' | 'title');
                   setCurrentPage(1);
                 }}
-                className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition cursor-pointer"
+                className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-900 focus:ring-2 focus:ring-red-700 focus:border-transparent transition cursor-pointer"
               >
                 <option value="latest" className="bg-gray-800">
                   Latest First
@@ -213,8 +213,8 @@ export default function EditPosts() {
 
             {/* Total Posts */}
             <div className="flex items-end">
-              <div className="text-sm text-gray-300">
-                Total: <span className="font-bold text-blue-400">{filteredPosts.length}</span> post{filteredPosts.length !== 1 ? 's' : ''}
+              <div className="text-sm text-gray-700">
+                Total: <span className="font-bold text-red-700">{filteredPosts.length}</span> post{filteredPosts.length !== 1 ? 's' : ''}
               </div>
             </div>
           </div>
@@ -222,70 +222,70 @@ export default function EditPosts() {
 
         {/* Posts Table */}
         {loading ? (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">
+          <div className="bg-white border border-gray-300 rounded-xl p-12 text-center">
             <div className="animate-pulse">
-              <p className="text-gray-300 text-lg">Loading posts...</p>
+              <p className="text-gray-700 text-lg">Loading posts...</p>
             </div>
           </div>
         ) : paginatedPosts.length === 0 ? (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">
-            <p className="text-gray-300 text-lg">
+          <div className="bg-white border border-gray-300 rounded-xl p-12 text-center">
+            <p className="text-gray-700 text-lg">
               {posts.length === 0 ? 'No posts yet. Create one to get started!' : 'No posts match your search.'}
             </p>
           </div>
         ) : (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+          <div className="bg-white border border-gray-300 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/5">
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Post #</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Title</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Author</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Category</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Published</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Time</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                  <tr className="border-b border-gray-300 bg-gray-50">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Post #</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Title</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Author</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Category</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Published</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Time</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedPosts.map((post, index) => (
                     <tr
                       key={post.id}
-                      className={`border-b border-white/5 transition hover:bg-white/5 ${
-                        index % 2 === 0 ? 'bg-white/2' : ''
+                      className={`border-b border-gray-300 transition hover:bg-gray-50 ${
+                        index % 2 === 0 ? 'bg-gray-50' : ''
                       }`}
                     >
                       <td className="px-6 py-4">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-300">
                           #{post.post_number}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-medium text-white truncate max-w-xs">{post.title}</p>
-                          <p className="text-xs text-gray-400 mt-1">{post.slug}</p>
+                          <p className="font-medium text-gray-900 truncate max-w-xs">{post.title}</p>
+                          <p className="text-xs text-gray-600 mt-1">{post.slug}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-300">{post.author}</td>
+                      <td className="px-6 py-4 text-gray-700">{post.author}</td>
                       <td className="px-6 py-4">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-300">
                           {post.category}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-300">{formatDate(post.created_at)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-300" suppressHydrationWarning>{formatDateTime(post.created_at)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-700">{formatDate(post.created_at)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-700" suppressHydrationWarning>{formatDateTime(post.created_at)}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           <button
                             onClick={() => router.push(`/posts/edit/${post.id}`)}
-                            className="px-3 py-1 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition border border-blue-500/30"
+                            className="px-3 py-1 rounded-lg text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100 transition border border-red-300"
                           >
                             ✏️ Edit
                           </button>
                           <button
                             onClick={() => setDeleteConfirm(post.id)}
-                            className="px-3 py-1 rounded-lg text-xs font-medium bg-red-500/20 text-red-300 hover:bg-red-500/30 transition border border-red-500/30"
+                            className="px-3 py-1 rounded-lg text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100 transition border border-red-300"
                           >
                             🗑️ Delete
                           </button>
@@ -299,22 +299,22 @@ export default function EditPosts() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-white/10 bg-white/5 flex items-center justify-between">
-                <div className="text-sm text-gray-300">
+              <div className="px-6 py-4 border-t border-gray-300 bg-gray-50 flex items-center justify-between">
+                <div className="text-sm text-gray-700">
                   Page {currentPage} of {totalPages}
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed border border-blue-500/30 hover:bg-blue-500/30 transition"
+                    className="px-4 py-2 rounded-lg bg-red-50 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed border border-red-300 hover:bg-red-100 transition"
                   >
                     ← Previous
                   </button>
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed border border-blue-500/30 hover:bg-blue-500/30 transition"
+                    className="px-4 py-2 rounded-lg bg-red-50 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed border border-red-300 hover:bg-red-100 transition"
                   >
                     Next →
                   </button>
@@ -326,22 +326,22 @@ export default function EditPosts() {
 
         {/* Delete Confirmation Modal */}
         {deleteConfirm !== null && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-            <div className="bg-gray-900 rounded-2xl border border-white/10 p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold text-white mb-4">Delete Post?</h3>
-              <p className="text-gray-300 mb-8">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl border border-gray-300 p-8 max-w-md w-full">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 font-serif">Delete Post?</h3>
+              <p className="text-gray-700 mb-8">
                 Are you sure you want to delete this post? This action cannot be undone.
               </p>
               <div className="flex gap-4">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition border border-white/20"
+                  className="flex-1 px-4 py-2 rounded-lg bg-gray-200 text-gray-900 hover:bg-gray-300 transition border border-gray-400 font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleDelete(deleteConfirm)}
-                  className="flex-1 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition font-semibold"
+                  className="flex-1 px-4 py-2 rounded-lg bg-red-700 text-white hover:bg-red-800 transition font-semibold"
                 >
                   Delete
                 </button>

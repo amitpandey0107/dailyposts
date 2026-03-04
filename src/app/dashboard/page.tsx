@@ -120,9 +120,9 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="animate-pulse space-y-4">
-          <div className="h-12 bg-gradient-to-r from-blue-500/20 to-orange-500/20 rounded-lg w-64"></div>
+          <div className="h-12 bg-gray-300 rounded-lg w-64"></div>
         </div>
       </div>
     );
@@ -168,30 +168,23 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-green-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-      </div>
-
+    <div className="min-h-screen bg-white flex flex-col relative">
       <Navigation />
 
       <main className="grow relative z-10">
         {/* Dashboard Header */}
-        <section className="py-16 md:py-24 border-b border-blue-500/20">
+        <section className="py-16 md:py-24 border-b border-gray-300">
           <div className="max-w-7xl mx-auto px-4">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-orange-500 rounded-2xl flex items-center justify-center text-3xl">
+                <div className="w-16 h-16 bg-red-700 rounded-2xl flex items-center justify-center text-3xl text-white">
                   👤
                 </div>
                 <div>
-                  <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent">
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 font-serif">
                     Welcome, {user?.username}!
                   </h1>
-                  <p className="text-gray-400 text-lg mt-2">
+                  <p className="text-gray-700 text-lg mt-2">
                     Manage all your content from one place
                   </p>
                 </div>
@@ -201,117 +194,128 @@ export default function DashboardPage() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-12 border-b border-blue-500/20">
+        <section className="py-12 border-b border-gray-300">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all">
-                <p className="text-gray-400 text-sm mb-2">Total Posts</p>
-                <p className="text-3xl font-bold text-blue-400">{statsLoading ? '-' : stats.total}</p>
+              <div className="bg-white border border-gray-300 rounded-xl p-6 hover:shadow-md transition-all">
+                <p className="text-gray-600 text-sm mb-2">Total Posts</p>
+                <p className="text-3xl font-bold text-red-700">{statsLoading ? '-' : stats.total}</p>
               </div>
-              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all">
-                <p className="text-gray-400 text-sm mb-2">This Month</p>
-                <p className="text-3xl font-bold text-orange-400">{statsLoading ? '-' : stats.thisMonth}</p>
+              <div className="bg-white border border-gray-300 rounded-xl p-6 hover:shadow-md transition-all">
+                <p className="text-gray-600 text-sm mb-2">This Month</p>
+                <p className="text-3xl font-bold text-red-700">{statsLoading ? '-' : stats.thisMonth}</p>
               </div>
-              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all">
-                <p className="text-gray-400 text-sm mb-2">This Week</p>
-                <p className="text-3xl font-bold text-green-400">{statsLoading ? '-' : stats.thisWeek}</p>
+              <div className="bg-white border border-gray-300 rounded-xl p-6 hover:shadow-md transition-all">
+                <p className="text-gray-600 text-sm mb-2">This Week</p>
+                <p className="text-3xl font-bold text-red-700">{statsLoading ? '-' : stats.thisWeek}</p>
               </div>
-              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all">
-                <p className="text-gray-400 text-sm mb-2">Today</p>
-                <p className="text-3xl font-bold text-cyan-400">{statsLoading ? '-' : stats.today}</p>
+              <div className="bg-white border border-gray-300 rounded-xl p-6 hover:shadow-md transition-all">
+                <p className="text-gray-600 text-sm mb-2">Today</p>
+                <p className="text-3xl font-bold text-red-700">{statsLoading ? '-' : stats.today}</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Dashboard Actions Grid */}
-        <section className="py-16 md:py-24">
+        {/* Quick Actions Section */}
+        <section className="py-12 border-b border-gray-300">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-12">Quick Actions</h2>
-            
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 font-serif">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {dashboardItems.map((item, index) => (
-                <Link key={index} href={item.href}>
-                  <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-lg hover:border-white/20 hover:bg-white/10 transition-all h-full cursor-pointer">
-                    {/* Background gradient on hover */}
-                    <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-br ${item.color} transition-opacity duration-300`}></div>
+              <Link
+                href="/posts/new"
+                className="bg-white border border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all text-center"
+              >
+                <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                  ✍️
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Create Post</h3>
+                <p className="text-sm text-gray-600">Write a new blog post</p>
+              </Link>
 
-                    {/* Content */}
-                    <div className="relative p-6 h-full flex flex-col justify-between">
-                      {/* Icon */}
-                      <div className={`w-14 h-14 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all`}>
-                        {item.icon}
-                      </div>
+              <Link
+                href="/posts/edit"
+                className="bg-white border border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all text-center"
+              >
+                <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                  📝
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Edit Posts</h3>
+                <p className="text-sm text-gray-600">Manage existing posts</p>
+              </Link>
 
-                      {/* Text */}
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
-                          {item.title}
-                        </h3>
-                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
-                          {item.description}
-                        </p>
-                      </div>
+              <Link
+                href="/posts/bulk-upload"
+                className="bg-white border border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all text-center"
+              >
+                <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                  📤
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Bulk Upload</h3>
+                <p className="text-sm text-gray-600">Upload multiple posts</p>
+              </Link>
 
-                      {/* Arrow */}
-                      <div className="mt-4 text-blue-400 group-hover:text-blue-300 group-hover:translate-x-2 transition-transform">
-                        → Open
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+              <Link
+                href="/posts"
+                className="bg-white border border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all text-center"
+              >
+                <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                  📚
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">View All Posts</h3>
+                <p className="text-sm text-gray-600">See all published posts</p>
+              </Link>
             </div>
           </div>
         </section>
 
         {/* Category Management Section */}
-        <section className="py-16 md:py-24 border-b border-blue-500/20">
+        <section className="py-12">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold text-white">Manage Categories</h2>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 font-serif">Manage Categories</h2>
               <button
                 onClick={() => setShowAddCategory(!showAddCategory)}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg font-bold transition-all"
+                className="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold transition-all"
               >
                 {showAddCategory ? '✕ Cancel' : '+ Add Category'}
               </button>
             </div>
 
             {showAddCategory && (
-              <div className="mb-8 bg-gradient-to-br from-blue-500/10 to-orange-500/10 border border-blue-500/30 rounded-xl p-6">
+              <div className="mb-8 bg-white border border-gray-300 rounded-xl p-6">
                 <form onSubmit={handleAddCategory} className="space-y-4">
                   <div>
-                    <label className="block text-white mb-2 font-semibold">Category Name</label>
+                    <label className="block text-gray-900 mb-2 font-semibold">Category Name</label>
                     <input
                       type="text"
                       value={categoryName}
                       onChange={(e) => setCategoryName(e.target.value)}
                       placeholder="e.g., AI & Machine Learning"
-                      className="w-full px-4 py-3 bg-slate-900/50 border border-blue-400/30 rounded-lg text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none transition"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:border-red-700 focus:outline-none transition"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-white mb-2 font-semibold">Emoji</label>
+                    <label className="block text-gray-900 mb-2 font-semibold">Emoji</label>
                     <input
                       type="text"
                       value={categoryEmoji}
                       onChange={(e) => setCategoryEmoji(e.target.value)}
                       placeholder="e.g., 🤖"
                       maxLength={2}
-                      className="w-full px-4 py-3 bg-slate-900/50 border border-blue-400/30 rounded-lg text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none transition"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:border-red-700 focus:outline-none transition"
                     />
                   </div>
                   {categoryError && (
-                    <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                    <div className="text-red-700 text-sm bg-red-50 border border-red-300 rounded-lg p-3">
                       {categoryError}
                     </div>
                   )}
                   <button
                     type="submit"
                     disabled={categoryLoading}
-                    className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-bold transition-all"
+                    className="w-full bg-red-700 hover:bg-red-800 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-bold transition-all"
                   >
                     {categoryLoading ? 'Adding...' : 'Add Category'}
                   </button>
@@ -321,20 +325,20 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {categories.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-gray-400">
+                <div className="col-span-full text-center py-12 text-gray-500">
                   <p className="text-lg">No categories yet. Create one to get started!</p>
                 </div>
               ) : (
                 categories.map((category) => (
                   <div
                     key={category.id}
-                    className="bg-gradient-to-br from-slate-800/50 to-slate-800/30 backdrop-blur-xl rounded-lg border border-blue-400/20 p-4 hover:border-orange-400/50 transition-all"
+                    className="bg-white border border-gray-300 rounded-lg p-4 hover:shadow-md transition-all"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-3xl">{category.emoji}</span>
                       <div className="flex-1">
-                        <h3 className="font-bold text-white">{category.name}</h3>
-                        <p className="text-sm text-gray-400">{category.slug}</p>
+                        <h3 className="font-bold text-gray-900">{category.name}</h3>
+                        <p className="text-sm text-gray-600">{category.slug}</p>
                       </div>
                     </div>
                   </div>
@@ -343,25 +347,25 @@ export default function DashboardPage() {
             </div>
           </div>
         </section>
-        <section className="py-12 border-t border-blue-500/20">
+        <section className="py-12 border-t border-gray-300">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-2xl font-bold text-white mb-8">Quick Tips</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8 font-serif">Quick Tips</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-300 mb-2">💡 Create Post</h3>
-                <p className="text-gray-400 text-sm">
+              <div className="bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all">
+                <h3 className="text-lg font-semibold text-red-700 mb-2">💡 Create Post</h3>
+                <p className="text-gray-600 text-sm">
                   Write engaging articles with a rich text editor. Add images, format text, and preview before publishing.
                 </p>
               </div>
-              <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-orange-300 mb-2">📝 Edit Posts</h3>
-                <p className="text-gray-400 text-sm">
+              <div className="bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all">
+                <h3 className="text-lg font-semibold text-red-700 mb-2">📝 Edit Posts</h3>
+                <p className="text-gray-600 text-sm">
                   Update your published articles anytime. Modify content, thumbnails, and metadata with ease.
                 </p>
               </div>
-              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-green-300 mb-2">📤 Bulk Upload</h3>
-                <p className="text-gray-400 text-sm">
+              <div className="bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all">
+                <h3 className="text-lg font-semibold text-red-700 mb-2">📤 Bulk Upload</h3>
+                <p className="text-gray-600 text-sm">
                   Import multiple posts at once using CSV. Perfect for migrating content or batch uploads.
                 </p>
               </div>
