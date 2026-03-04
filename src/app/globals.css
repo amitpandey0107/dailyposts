@@ -1,15 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Poppins:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --primary: #0ea5e9;
-  --secondary: #f97316;
-  --accent: #10b981;
-  --dark: #0f172a;
-  --card-dark: #1e293b;
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --primary: #c41e3a;
+  --secondary: #f5a623;
+  --accent: #4a4a4a;
+  --light-gray: #f8f8f8;
+  --border: #e0e0e0;
 }
 
 * {
@@ -21,11 +23,21 @@ html {
 }
 
 body {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0a0a0a 100%);
-  background-attachment: fixed;
-  color: var(--foreground);
-  font-family: 'Segoe UI', Trebuchet MS, sans-serif;
+  background: #ffffff;
+  color: #333333;
+  font-family: 'Poppins', 'Segoe UI', Trebuchet MS, sans-serif;
   min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: #000000;
+}
+
+.serif-title {
+  font-family: 'DM Serif Display', serif;
 }
 
 /* Scrollbar Styling */
@@ -35,27 +47,20 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(30, 41, 59, 0.5);
+  background: #f5f5f5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
+  background: #c41e3a;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #2563eb 0%, #7c3aed 100%);
+  background: #a01630;
 }
 
 /* Selection Styling */
 ::selection {
-  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+  background: #c41e3a;
   color: white;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
